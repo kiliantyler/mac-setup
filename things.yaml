@@ -21,7 +21,13 @@ brew:
     - gpg
     - docker
     - rancher-compose
+    - htop
+    - git
+    - git-extras
   taps:
+    - homebrew/core
+    - homebrew/cask
+    - homebrew/bundle
     - homebrew/cask-fonts
   casks:
     - font-fira-code-nerd-font
@@ -31,6 +37,9 @@ brew:
     - setapp
     - rancher
     - 1password
+
+pip:
+  - pipx
 
 asdf:
   - alias

@@ -1,10 +1,12 @@
-# all: ADD_SUDO INSTALL_HOMEBREW POST_INSTALL_HOMEBREW INSTALL_YQ
-
+OS := $(shell bin/is-supported bin/is-macos macos)
+DOTFILES_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+HOMEBREW_PREFIX := $(shell bin/is-supported bin/is-arm64 /opt/homebrew /usr/local)
+export PATH := /usr/local/bin:$(HOME)/.asdf/shims:$(HOMEBREW_PREFIX)/bin:$(DOTFILES_DIR)/bin:$(PATH)
+export XDG_CONFIG_HOME = $(HOME)/.config
+export STOW_DIR = $(DOTFILES_DIR)
+export ACCEPT_EULA=Y
 USER := $(shell whoami)
-export PATH:=/usr/local/bin:/opt/homebrew/bin:$(PATH)
-
-IS_M1=$(shell uname -v | grep -i arm > /dev/null && echo true || echo false)
-BREW_PREFIX=$(shell brew --prefix 2> /dev/null)
+IS_M1 := $(shell bin/is-supported bin/is-arm64 true false)
 ifeq "$(IS_M1)" "true"
 BREW=/opt/homebrew/bin/brew
 BREW_CMD=arch -arm64 brew
@@ -13,45 +15,37 @@ BREW=/usr/local/bin/brew
 BREW_CMD=brew
 endif
 
-OS=$(shell uname)
+HOMEFILES := $(shell ls -A $(HOME))
+DOTFILES := $(addprefix $(HOME)/,$(HOMEFILES))
 
-ifeq "$(OS)" "Darwin"
+.PHONY: TEST
 
-all: \
-INSTALL_YQ INSTALL_FORMULAS INSTALL_CASKS \
-TFENV_SETUP INSTALL_ASDF_PROGRAMS INSTALL_OMZSH_THEMES \
-INSTALL_OMZSH_PLUGINS INSTALL_CASKS
+ifeq "$(OS)" "macos"
 
-ADD_SUDO:
-	echo "Adding user to SUDOERS file"
-	echo "$(USER)		ALL = (ALL) NOPASSWD: ALL" | sudo tee /private/etc/sudoers.d/$(USER)
+TEST:
+	cat ~/.zprofile
 
 DOTFILES:
 	echo "Does nothing yet"
 
-CURL_HOMEBREW: ADD_SUDO
-	echo "Installing Homebrew"
-	curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh -o install_homebrew.sh
-	chmod +x install_homebrew.sh
+ADD_SUDO: SUDOERS_FILE=/private/etc/sudoers.d/$(USER)
+ADD_SUDO:
+	is-grep $(USER) $(SUDOERS_FILE) || (echo "$(USER)		ALL = (ALL) NOPASSWD: ALL" | sudo tee $(SUDOERS_FILE))
 
-INSTALL_HOMEBREW: | CURL_HOMEBREW
-	NONINTERACTIVE=1 /bin/bash -c ./install_homebrew.sh
+INSTALL_HOMEBREW: ADD_SUDO
+	is-executable brew || (echo 'Installing Homebrew'; NONINTERACTIVE=1 /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
 
 POST_INSTALL_HOMEBREW: | INSTALL_HOMEBREW
-	if grep "brew shellenv" ~/.zprofile; then \
-	echo 'Brew already in zprofile'; \
-	else \
-	echo 'eval "$$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile; \
-	fi
-	rm -f install_homebrew.sh
-	echo "Homebrew installed"
+	is-grep "/opt/homebrew/bin/brew" $(HOME)/.zprofile || (echo 'eval "$$(/opt/homebrew/bin/brew shellenv)"' | tee -a ~/.zprofile)
 
 INSTALL_YQ: | POST_INSTALL_HOMEBREW
-	echo "Installing yq to parse the config file"
-	$(BREW_CMD) install yq
+	is-executable yq || (echo "Installing yq"; $(BREW_CMD) install yq)
+
+INSTALL_STOW: POST_INSTALL_HOMEBREW
+	is-executable stow || (echo 'Installing stow'; $(BREW_CMD) install stow)
 
 INSTALL_OHMYZSH:
-	sh -c "$$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+	is-folder ~/.oh-my-zsh || (echo 'Installing Oh-my-zsh'; sh -c "$$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)")
 
 INSTALL_OMZSH_THEMES:
 	THEMES="$(shell yq '.zsh.oh-my-zsh.themes | to_entries | .[] | (.key + "|" +.value)' things.yaml)"; \
@@ -81,37 +75,27 @@ INSTALL_OMZSH_PLUGINS:
 	fi \
 	done
 
-INSTALL_FORMULAS:
-	echo "Installing Homebrew Formulas"
-	FORMULAS="$(shell yq '.brew.formulas.[]' things.yaml)"; \
-	for formula in $${FORMULAS}; do \
-	$(BREW_CMD) install $$formula; \
-	done
+INSTALL_FORMULAS: INSTALL_HOMEBREW CREATE_BREWFILE
+	brew bundle --file=$(DOTFILES_DIR)/install/Brewfile || true
+	xattr -d -r com.apple.quarantine ~/Library/QuickLook
 
-INSTALL_TAPS:
-	echo "Installing Homebrew Taps"
-	TAPS="$(shell yq '.brew.taps.[]' things.yaml)"; \
-	for tap in $${TAPS}; do \
-	  $(BREW_CMD) tap $${tap}; \
-	done
-
-INSTALL_CASKS:
-	echo "Installing Casks"
-	CASKS="$(shell yq '.brew.casks.[]' things.yaml)"; \
-	for cask in $${CASKS}; do \
-	  $(BREW_CMD) install --cask $${cask}; \
-	done
+CREATE_BREWFILE:
+	makebrew things.yaml || (echo "Error creating Brewfile"; exit 1)
 
 TFENV_SETUP:
 	tfenv install latest; \
 	tfenv use latest
 
+INSTALL_PIP_PROGRAMS: PIPPROGRAMS="$(shell yq '.pip.[]' things.yaml)"
+INSTALL_PIP_PROGRAMS:
+	pip install "$(PIPPROGRAMS)"
+
+INSTALL_ASDF_PROGRAMS: PROGRAMS="$(shell yq '.asdf.[]' things.yaml)"
 INSTALL_ASDF_PROGRAMS:
-	PROGRAMS="$(shell yq '.asdf.[]' things.yaml)"; \
-	for program in $${PROGRAMS}; do \
-	asdf plugin add $$program; \
-	asdf install $$program latest; \
-	asdf global $$program latest; \
+	for program in "$(PROGRAMS)"; do \
+		asdf plugin add $$program; \
+		asdf install $$program latest; \
+		asdf global $$program latest; \
 	done
 
 endif
