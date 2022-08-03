@@ -63,6 +63,10 @@ asdf:
   - python
   - terraform-validator
 
+code:
+  extensions:
+    - fake
+
 Notes:
   - alias-tips: https://github.com/djui/alias-tips
   - direnv: https://github.com/asdf-community/asdf-direnv#setup
