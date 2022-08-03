@@ -82,6 +82,9 @@ INSTALL_FORMULAS: INSTALL_HOMEBREW CREATE_BREWFILE
 CREATE_BREWFILE:
 	makebrew things.yaml || (echo "Error creating Brewfile"; exit 1)
 
+CREATE_CODEFILE:
+	makecode things.yaml || (echo "Error creating Codefile"; exit 1)
+
 TFENV_SETUP:
 	tfenv install latest; \
 	tfenv use latest

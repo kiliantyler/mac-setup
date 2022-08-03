@@ -4,39 +4,40 @@ zsh:
       powerlevel10k: https://github.com/romkatv/powerlevel10k.git
       spaceship: https://github.com/spaceship-prompt/spaceship-prompt.git
     plugins:
+      alias-tips: https://github.com/djui/alias-tips.git
+      asdf: https://github.com/kiurchv/asdf.plugin.zsh.git
       zsh-autocompletion: https://github.com/marlonrichert/zsh-autocomplete.git
       zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting.git
-      asdf: https://github.com/kiurchv/asdf.plugin.zsh.git
-      alias-tips: https://github.com/djui/alias-tips.git
 
 brew:
   formulas:
-    - unzip
-    - autojump
     - asdf
+    - autojump
     - bat
-    - tfenv
     - coreutils
-    - openssl
-    - gpg
     - docker
-    - rancher-compose
-    - htop
     - git
     - git-extras
+    - gpg
+    - htop
+    - openssl
+    - rancher-compose
+    - tfenv
+    - unzip
   taps:
-    - homebrew/core
-    - homebrew/cask
     - homebrew/bundle
+    - homebrew/cask
     - homebrew/cask-fonts
+    - homebrew/core
   casks:
-    - font-fira-code-nerd-font
+    - 1password
+    - cakebrew
     - font-code-new-roman-nerd-font
+    - font-fira-code-nerd-font
     - font-open-dyslexic-nerd-font
     - gitkraken
-    - setapp
     - rancher
-    - 1password
+    - setapp
 
 pip:
   - pipx
