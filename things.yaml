@@ -18,11 +18,13 @@ brew:
     - coreutils
     - openssl
     - gpg
+  taps:
+    - homebrew/cask-fonts
   casks:
-    homebrew/cask-fonts: font-fira-code-nerd-font
-    homebrew/cask-fonts: font-code-new-roman-nerd-font
-    homebrew/cask-fonts: font-open-dyslexic-nerd-font
-    homebrew/cask-fonts: font-terminess-nerd-font
+    - font-fira-code-nerd-font
+    - font-code-new-roman-nerd-font
+    - font-open-dyslexic-nerd-font
+    - gitkraken
 
 asdf:
   - alias

@@ -88,14 +88,18 @@ INSTALL_FORMULAS:
 	$(BREW_CMD) install $$formula; \
 	done
 
-INSTALL_CASKS:
-	echo "Installing Casks & Formulas from them"
-	CASKS="$(shell yq '.brew.casks | to_entries | .[] | (.key + "|" +.value)' things.yaml)"; \
-	for cask in $${CASKS}; do \
-	  tap="$$(echo $$cask | cut -f1 -d'|')"; \
-	  formula="$$(echo $$cask | cut -f2 -d'|')"; \
+INSTALL_TAPS:
+	echo "Installing Homebrew Taps"
+	TAPS="$(shell yq '.brew.taps.[]' things.yaml)"; \
+	for tap in $${TAPS}; do \
 	  $(BREW_CMD) tap $${tap}; \
-	  $(BREW_CMD) install --cask $${formula}; \
+	done
+
+INSTALL_CASKS:
+	echo "Installing Casks"
+	CASKS="$(shell yq '.brew.casks.[]' things.yaml)"; \
+	for cask in $${CASKS}; do \
+	  $(BREW_CMD) install --cask $${cask}; \
 	done
 
 TFENV_SETUP:
