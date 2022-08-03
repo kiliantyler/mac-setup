@@ -8,6 +8,7 @@ zsh:
       zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting.git
       asdf: https://github.com/kiurchv/asdf.plugin.zsh.git
       alias-tips: https://github.com/djui/alias-tips.git
+
 brew:
   formulas:
     - unzip
@@ -25,6 +26,8 @@ brew:
     - font-code-new-roman-nerd-font
     - font-open-dyslexic-nerd-font
     - gitkraken
+    - setapp
+    - rancher
 
 asdf:
   - alias
