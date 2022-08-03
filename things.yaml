@@ -19,6 +19,8 @@ brew:
     - coreutils
     - openssl
     - gpg
+    - docker
+    - rancher-compose
   taps:
     - homebrew/cask-fonts
   casks:
@@ -28,6 +30,7 @@ brew:
     - gitkraken
     - setapp
     - rancher
+    - 1password
 
 asdf:
   - alias
