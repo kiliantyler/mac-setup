@@ -1,0 +1,48 @@
+zsh:
+  oh-my-zsh:
+    themes:
+      powerlevel10k: https://github.com/romkatv/powerlevel10k.git
+      spaceship: https://github.com/spaceship-prompt/spaceship-prompt.git
+    plugins:
+      zsh-autocompletion: https://github.com/marlonrichert/zsh-autocomplete.git
+      zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting.git
+      asdf: https://github.com/kiurchv/asdf.plugin.zsh.git
+      alias-tips: https://github.com/djui/alias-tips.git
+brew:
+  formulas:
+    - unzip
+    - autojump
+    - asdf
+    - bat
+    - tfenv
+    - coreutils
+    - openssl
+    - gpg
+  casks:
+    homebrew/cask-fonts: font-fira-code-nerd-font
+    homebrew/cask-fonts: font-code-new-roman-nerd-font
+    homebrew/cask-fonts: font-open-dyslexic-nerd-font
+    homebrew/cask-fonts: font-terminess-nerd-font
+
+asdf:
+  - alias
+  - argocd
+  - ctop
+  - direnv
+  - docker-slim
+  - dotnet-core
+  - fx
+  - fzf
+  - golang
+  - helm
+  - iam-policy-json-to-terraform
+  - jq
+  - kubectl
+  - kubectx
+  - kubespy
+  - python
+  - terraform-validator
+
+Notes:
+  - alias-tips: https://github.com/djui/alias-tips
+  - direnv: https://github.com/asdf-community/asdf-direnv#setup
