@@ -29,8 +29,10 @@ brew:
     - homebrew/cask
     - homebrew/cask-fonts
     - homebrew/core
+    - 1password/tap
   casks:
     - 1password
+    - 1password-cli
     - cakebrew
     - font-code-new-roman-nerd-font
     - font-fira-code-nerd-font

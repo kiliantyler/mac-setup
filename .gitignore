@@ -1,2 +1,6 @@
 
 install/Brewfile.lock.json
+
+.ignore/
+
+install/Brewfile
