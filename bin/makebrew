@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 yamlfile=$1
 
-taps=$(yq '.brew.taps.[]' $yamlfile)
-casks=$(yq '.brew.casks.[]' $yamlfile)
-brews=$(yq '.brew.formulas.[]' $yamlfile)
+taps=$(yq '.brew.taps.[]' "$yamlfile")
+casks=$(yq '.brew.casks.[]' "$yamlfile")
+brews=$(yq '.brew.formulas.[]' "$yamlfile")
 brewfile=install/Brewfile
 
 echo -n "" > ${brewfile}

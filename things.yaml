@@ -8,28 +8,53 @@ zsh:
       asdf: https://github.com/kiurchv/asdf.plugin.zsh.git
       zsh-autocompletion: https://github.com/marlonrichert/zsh-autocomplete.git
       zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting.git
+      fzf-tab: https://github.com/Aloxaf/fzf-tab.git
+      zsh-autosuggestions: https://github.com/zsh-users/zsh-autosuggestions.git
+      
 
 brew:
   formulas:
     - asdf
     - autojump
     - bat
+    - bats-core
+    - blackbox
     - coreutils
+    - croc
+    - diff-so-fancy
+    - difftastic
+    - dnscontrol
     - docker
+    - fasd
+    - fd
     - git
     - git-extras
+    - gnu-sed
     - gpg
+    - grep
     - htop
+    - httpie
+    - mackup
+    - nano
     - openssl
     - rancher-compose
+    - powershell
+    - shellcheck
+    - ssh-copy-id
     - tfenv
+    - thefuck
+    - topgrade
+    - tree
     - unzip
+    - webp
+    - wget
   taps:
     - homebrew/bundle
     - homebrew/cask
     - homebrew/cask-fonts
     - homebrew/core
     - 1password/tap
+    - hpedrorodrigues/tools
   casks:
     - 1password
     - 1password-cli
@@ -40,20 +65,31 @@ brew:
     - gitkraken
     - rancher
     - setapp
+    - visual-studio-code
+    - dockutil
+    - google-drive
+    - firefox
+    - google-chrome
+    - insomnia
+    - raycast
+    - slack
+    - spotify
 
 pip:
-  - pipx
+  - gmail-yaml-filters
 
+# Programs that plugin name doesn't match the executable can be put in
+# with a <plugin>:<executable> format so that it doesn't attempt install every time
 asdf:
   - alias
   - argocd
   - ctop
   - direnv
   - docker-slim
-  - dotnet-core
+  - dotnet-core: dotnet
   - fx
   - fzf
-  - golang
+  - golang: go
   - helm
   - iam-policy-json-to-terraform
   - jq
@@ -70,3 +106,8 @@ code:
 Notes:
   - alias-tips: https://github.com/djui/alias-tips
   - direnv: https://github.com/asdf-community/asdf-direnv#setup
+Manual:
+  - https://github.com/dteare/opbookmarks/releases
+
+aliases:
+  - upgrade: topgrade

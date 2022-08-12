@@ -2,7 +2,6 @@ OS := $(shell bin/is-supported bin/is-macos macos)
 DOTFILES_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 HOMEBREW_PREFIX := $(shell bin/is-supported bin/is-arm64 /opt/homebrew /usr/local)
 export PATH := /usr/local/bin:$(HOME)/.asdf/shims:$(HOMEBREW_PREFIX)/bin:$(DOTFILES_DIR)/bin:$(PATH)
-export XDG_CONFIG_HOME = $(HOME)/.config
 export STOW_DIR = $(DOTFILES_DIR)
 export ACCEPT_EULA=Y
 USER := $(shell whoami)
@@ -26,7 +25,7 @@ TEST:
 	cat ~/.zprofile
 
 DOTFILES:
-	echo "Does nothing yet"
+
 
 ADD_SUDO: SUDOERS_FILE=/private/etc/sudoers.d/$(USER)
 ADD_SUDO:
@@ -52,7 +51,7 @@ INSTALL_OMZSH_THEMES:
 	for theme in $${THEMES}; do \
 	folder="$$(echo $$theme | cut -f1 -d'|')"; \
 	gitrepo="$$(echo $$theme | cut -f2 -d'|')"; \
-	if [ ! -d "$${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/plugins/$${folder}" ]; then \
+	if [ ! -d "$${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/themes/$${folder}" ]; then \
 	echo "Cloning $${folder}"; \
 	git clone --depth=1 $${gitrepo} $${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/themes/$${folder}; \
 	else \
@@ -62,11 +61,11 @@ INSTALL_OMZSH_THEMES:
 	done
 
 INSTALL_OMZSH_PLUGINS:
-	PLUGINS="$(shell yq '.zsh.oh-my-zsh.themes | to_entries | .[] | (.key + "|" +.value)' things.yaml)"; \
+	PLUGINS="$(shell yq '.zsh.oh-my-zsh.plugins | to_entries | .[] | (.key + "|" +.value)' things.yaml)"; \
 	for plugin in $${PLUGINS}; do \
 	folder="$$(echo $$plugin | cut -f1 -d'|')"; \
 	gitrepo="$$(echo $$plugin | cut -f2 -d'|')"; \
-	if [ ! -d "$${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/themes/$${folder}" ]; then \
+	if [ ! -d "$${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/plugins/$${folder}" ]; then \
 	echo "Cloning $${folder}"; \
 	git clone --depth=1 $${gitrepo} $${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/plugins/$${folder}; \
 	else \
@@ -89,17 +88,15 @@ TFENV_SETUP:
 	tfenv install latest; \
 	tfenv use latest
 
-INSTALL_PIP_PROGRAMS: PIPPROGRAMS="$(shell yq '.pip.[]' things.yaml)"
-INSTALL_PIP_PROGRAMS:
-	pip install "$(PIPPROGRAMS)"
+INSTALL_PIPX: | INSTALL_ASDF_PROGRAMS
+	is-executable pipx || (echo "Installing pipx"; pip install pipx)
 
-INSTALL_ASDF_PROGRAMS: PROGRAMS="$(shell yq '.asdf.[]' things.yaml)"
+INSTALL_PIP_PROGRAMS: PIPPROGRAMS="$(shell yq '.pip.[]' things.yaml)"
+INSTALL_PIP_PROGRAMS: INSTALL_PIPX
+	pipx install "$(PIPPROGRAMS)"
+
 INSTALL_ASDF_PROGRAMS:
-	for program in "$(PROGRAMS)"; do \
-		asdf plugin add $$program; \
-		asdf install $$program latest; \
-		asdf global $$program latest; \
-	done
+	asdfinstall things.yaml || (echo "Error installing asdf programs"; exit 1)
 
 endif
 

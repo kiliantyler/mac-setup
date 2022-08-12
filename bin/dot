@@ -52,7 +52,7 @@ case $COMMAND_NAME in
     ;;
   *)
     shift
-    sub_${COMMAND_NAME} $@
+    sub_${COMMAND_NAME} "$@"
     if [ $? = 127 ]; then
       echo "'$COMMAND_NAME' is not a known command or has errors." >&2
       sub_help
