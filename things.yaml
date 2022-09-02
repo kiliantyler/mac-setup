@@ -16,6 +16,7 @@ brew:
   formulas:
     - asdf
     - autojump
+    - awscli
     - bat
     - bats-core
     - blackbox
@@ -48,6 +49,15 @@ brew:
     - unzip
     - webp
     - wget
+    - pulumi
+    - terraform-docs
+    - tflint
+    - tfsec
+    - checkov
+    - pre-commit
+    - gawk
+    - terrascan
+    - tfupdate
   taps:
     - homebrew/bundle
     - homebrew/cask
@@ -55,9 +65,12 @@ brew:
     - homebrew/core
     - 1password/tap
     - hpedrorodrigues/tools
+    - pulumi/tap
+    - liamg/tfsec
   casks:
     - 1password
     - 1password-cli
+    - alt-tab
     - cakebrew
     - font-code-new-roman-nerd-font
     - font-fira-code-nerd-font
@@ -74,6 +87,7 @@ brew:
     - raycast
     - slack
     - spotify
+    - vivaldi
 
 pip:
   - gmail-yaml-filters
@@ -96,6 +110,7 @@ asdf:
   - kubectl
   - kubectx
   - kubespy
+  - nodejs: npm
   - python
   - terraform-validator
 
