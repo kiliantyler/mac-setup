@@ -20,6 +20,7 @@ brew:
     - bat
     - bats-core
     - blackbox
+    - checkov
     - coreutils
     - croc
     - diff-so-fancy
@@ -28,6 +29,7 @@ brew:
     - docker
     - fasd
     - fd
+    - gawk
     - git
     - git-extras
     - gnu-sed
@@ -35,29 +37,28 @@ brew:
     - grep
     - htop
     - httpie
+    - imageoptim-cli
     - infracost
     - mackup
     - nano
     - openssl
+    - pre-commit
+    - pulumi
     - rancher-compose
     - shellcheck
     - ssh-copy-id
+    - terraform-docs
+    - terrascan
     - tfenv
+    - tflint
+    - tfsec
+    - tfupdate
     - thefuck
     - topgrade
     - tree
     - unzip
     - webp
     - wget
-    - pulumi
-    - terraform-docs
-    - tflint
-    - tfsec
-    - checkov
-    - pre-commit
-    - gawk
-    - terrascan
-    - tfupdate
   taps:
     - homebrew/bundle
     - homebrew/cask
@@ -65,31 +66,32 @@ brew:
     - homebrew/core
     - 1password/tap
     - hpedrorodrigues/tools
-    - pulumi/tap
     - liamg/tfsec
+    - pulumi/tap
   casks:
     - 1password
     - 1password-cli
     - alt-tab
     - cakebrew
+    - dockutil
+    - firefox
     - font-code-new-roman-nerd-font
     - font-fira-code-nerd-font
     - font-open-dyslexic-nerd-font
     - gitkraken
-    - rancher
-    - setapp
-    - visual-studio-code
-    - dockutil
-    - google-drive
-    - firefox
     - google-chrome
+    - google-drive
+    - imageoptim
     - insomnia
+    - orion
+    - powershell
+    - rancher
     - raycast
+    - setapp
     - slack
     - spotify
+    - visual-studio-code
     - vivaldi
-    - powershell
-    - orion
 
 pip:
   - gmail-yaml-filters
