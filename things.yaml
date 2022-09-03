@@ -35,11 +35,11 @@ brew:
     - grep
     - htop
     - httpie
+    - infracost
     - mackup
     - nano
     - openssl
     - rancher-compose
-    - powershell
     - shellcheck
     - ssh-copy-id
     - tfenv
@@ -88,6 +88,8 @@ brew:
     - slack
     - spotify
     - vivaldi
+    - powershell
+    - orion
 
 pip:
   - gmail-yaml-filters
