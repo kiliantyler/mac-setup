@@ -48,7 +48,7 @@ else
   fi
 fi
 
-unlink "${shortSock}"
+unlink "${shortSock}" > /dev/null 2>&1
 .log 6 "Creating symlink from ${shortSock} to ${agentSock}"
 ln -s "${agentSock}" "${shortSock}"
 exit 0
