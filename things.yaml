@@ -1,174 +1,177 @@
+---
+# yamllint disable rule:line-length
 zsh:
-  oh-my-zsh:
-    themes:
-      powerlevel10k: https://github.com/romkatv/powerlevel10k.git
-      spaceship: https://github.com/spaceship-prompt/spaceship-prompt.git
-    plugins:
-      alias-tips: https://github.com/djui/alias-tips.git
-      asdf: https://github.com/kiurchv/asdf.plugin.zsh.git
-      zsh-autocompletion: https://github.com/marlonrichert/zsh-autocomplete.git
-      zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting.git
-      fzf-tab: https://github.com/Aloxaf/fzf-tab.git
-      zsh-autosuggestions: https://github.com/zsh-users/zsh-autosuggestions.git
-      
+    oh-my-zsh:
+        themes:
+            powerlevel10k: https://github.com/romkatv/powerlevel10k.git
+            spaceship: https://github.com/spaceship-prompt/spaceship-prompt.git
+        plugins:
+            alias-tips: https://github.com/djui/alias-tips.git
+            asdf: https://github.com/kiurchv/asdf.plugin.zsh.git
+            zsh-autocompletion: https://github.com/marlonrichert/zsh-autocomplete.git
+            zsh-syntax-highlighting: https://github.com/zsh-users/zsh-syntax-highlighting.git
+            fzf-tab: https://github.com/Aloxaf/fzf-tab.git
+            zsh-autosuggestions: https://github.com/zsh-users/zsh-autosuggestions.git
+
 
 brew:
-  formulas:
-    - asdf
-    - autojump
-    - awscli
-    - bat
-    - bats-core
-    - blackbox
-    - checkov
-    - coreutils
-    - croc
-    - diff-so-fancy
-    - difftastic
-    - dnscontrol
-    - docker
-    - fasd
-    - fd
-    - gawk
-    - git
-    - git-extras
-    - gnu-sed
-    - gpg
-    - grep
-    - htop
-    - httpie
-    - imageoptim-cli
-    - infracost
-    - mackup
-    - nano
-    - openssl
-    - pre-commit
-    - pulumi
-    - rancher-compose
-    - shellcheck
-    - ssh-copy-id
-    - terraform-docs
-    - terrascan
-    - tfenv
-    - tflint
-    - tfsec
-    - tfupdate
-    - thefuck
-    - topgrade
-    - tree
-    - unzip
-    - webp
-    - wget
-  taps:
-    - homebrew/bundle
-    - homebrew/cask
-    - homebrew/cask-fonts
-    - homebrew/core
-    - 1password/tap
-    - DamascenoRafael/tap
-    - hpedrorodrigues/tools
-    - liamg/tfsec
-    - pulumi/tap
-  casks:
-    - 1password
-    - 1password-cli
-    - alt-tab
-    - cakebrew
-    - dockutil
-    - firefox
-    - font-code-new-roman-nerd-font
-    - font-fira-code-nerd-font
-    - font-open-dyslexic-nerd-font
-    - gitkraken
-    - google-chrome
-    - google-drive
-    - imageoptim
-    - insomnia
-    - orion
-    - powershell
-    - rancher
-    - raycast
-    - reminders-menubar
-    - setapp
-    - shottr
-    - slack
-    - spotify
-    - visual-studio-code
-    - vivaldi
+    formulas:
+        - asdf
+        - autojump
+        - awscli
+        - bat
+        - bats-core
+        - blackbox
+        - checkov
+        - coreutils
+        - croc
+        - diff-so-fancy
+        - difftastic
+        - dnscontrol
+        - docker
+        - fasd
+        - fd
+        - gawk
+        - git
+        - git-extras
+        - gnu-sed
+        - gpg
+        - grep
+        - htop
+        - httpie
+        - imageoptim-cli
+        - infracost
+        - mackup
+        - nano
+        - openssl
+        - pre-commit
+        - pulumi
+        - rancher-compose
+        - shellcheck
+        - shfmt
+        - ssh-copy-id
+        - terraform-docs
+        - terrascan
+        - tfenv
+        - tflint
+        - tfsec
+        - tfupdate
+        - thefuck
+        - topgrade
+        - tree
+        - unzip
+        - webp
+        - wget
+    taps:
+        - homebrew/bundle
+        - homebrew/cask
+        - homebrew/cask-fonts
+        - homebrew/core
+        - 1password/tap
+        - DamascenoRafael/tap
+        - hpedrorodrigues/tools
+        - liamg/tfsec
+        - pulumi/tap
+    casks:
+        - 1password
+        - 1password-cli
+        - alt-tab
+        - cakebrew
+        - dockutil
+        - firefox
+        - font-code-new-roman-nerd-font
+        - font-fira-code-nerd-font
+        - font-open-dyslexic-nerd-font
+        - gitkraken
+        - google-chrome
+        - google-drive
+        - imageoptim
+        - insomnia
+        - orion
+        - powershell
+        - rancher
+        - raycast
+        - reminders-menubar
+        - setapp
+        - shottr
+        - slack
+        - spotify
+        - visual-studio-code
+        - vivaldi
 
 pip:
-  - gmail-yaml-filters
+    - gmail-yaml-filters
 
 # Programs that plugin name doesn't match the executable can be put in
 # with a <plugin>:<executable> format so that it doesn't attempt install every time
 asdf:
-  - alias
-  - argocd
-  - ctop
-  - direnv
-  - docker-slim
-  - dotnet-core: dotnet
-  - fx
-  - fzf
-  - golang: go
-  - helm
-  - iam-policy-json-to-terraform
-  - jq
-  - kubectl
-  - kubectx
-  - kubespy
-  - nodejs: npm
-  - python
-  - terraform-validator
+    - alias
+    - argocd
+    - ctop
+    - direnv
+    - docker-slim
+    - dotnet-core: dotnet
+    - fx
+    - fzf
+    - golang: go
+    - helm
+    - iam-policy-json-to-terraform
+    - jq
+    - kubectl
+    - kubectx
+    - kubespy
+    - nodejs: npm
+    - python
+    - terraform-validator
 
 code:
-  extensions:
-    - fake
+    extensions:
+        - fake
 aliases:
-  - upgrade: topgrade
+    - upgrade: topgrade
 
 Notes:
-  - alias-tips: https://github.com/djui/alias-tips
-  - direnv: https://github.com/asdf-community/asdf-direnv#setup
+    - alias-tips: https://github.com/djui/alias-tips
+    - direnv: https://github.com/asdf-community/asdf-direnv#setup
 Manual:
-  Setapp:
-    - Boom3D
-    - iStat Menus
-    - Paste
-    - One Switch
-    - Almighty
-    - CleanShotX
-    - Toothfairy
-    - Bartender
-    - Dropzone
-    - Batteries
-    - Bettertouchtool
-    - SQLPro Studio
-    - Chronicle
-    - CleanMyMacX
-    - DisplayBuddy
-    - Meeter
-  AppStore:
-    - PullBar: https://apps.apple.com/ca/app/pullbar/id1601913905?mt=12
-    - Velja: https://apps.apple.com/us/app/velja/id1607635845?mt=12
-    - Recipe Keeper: https://apps.apple.com/us/app/recipe-keeper/id1315583175?mt=12
-    - Drop Over: https://apps.apple.com/us/app/dropover-easier-drag-drop/id1355679052?mt=12
-    - HomeControl Menu: https://apps.apple.com/us/app/homecontrol-menu-for-homekit/id1547121417?mt=12
-    - Fantastical: https://apps.apple.com/us/app/fantastical-calendar/id975937182?mt=12
-    - Affinity Photo: https://apps.apple.com/us/app/affinity-photo/id824183456?mt=12
-    - Affinity Designer: https://apps.apple.com/us/app/affinity-designer/id824171161?mt=12
-    - Affinity Publisher: https://apps.apple.com/us/app/affinity-publisher/id881418622?mt=12
-    - Spaces: https://apps.apple.com/us/app/spaces/id1509611686
-    - Things 3: https://apps.apple.com/us/app/things-3/id904280696?mt=12
-    - Parcel: https://apps.apple.com/us/app/parcel-delivery-tracking/id639968404?mt=12
-    - Home Cam: https://apps.apple.com/us/app/homecam-for-homekit/id1292995895
-    - Home Pass: https://apps.apple.com/us/app/homepass-for-homekit/id1330266650
-    - Microsoft Word: https://apps.apple.com/us/app/microsoft-word/id462054704?mt=12
-    - Microsoft Excel: https://apps.apple.com/us/app/microsoft-excel/id462058435?mt=12
-    - Microsoft Outlook: https://apps.apple.com/us/app/microsoft-outlook/id985367838?mt=12
-    - Daisy Disk: https://apps.apple.com/us/app/daisydisk/id411643860?mt=12
-    - Trello: https://apps.apple.com/us/app/trello/id1278508951?mt=12
-    - Magnet: https://apps.apple.com/us/app/magnet/id441258766?mt=12
-    - MacTracker: https://apps.apple.com/us/app/mactracker/id430255202?mt=12
-    - Final Cut Pro: https://apps.apple.com/us/app/final-cut-pro/id424389933?mt=12
-    - Xcode: https://apps.apple.com/us/app/xcode/id497799835?mt=12
+    Setapp:
+        - Boom3D
+        - iStat Menus
+        - Paste
+        - One Switch
+        - Almighty
+        - CleanShotX
+        - Toothfairy
+        - Bartender
+        - Dropzone
+        - Batteries
+        - Bettertouchtool
+        - SQLPro Studio
+        - Chronicle
+        - CleanMyMacX
+        - DisplayBuddy
+        - Meeter
+    AppStore:
+        - PullBar: https://apps.apple.com/ca/app/pullbar/id1601913905?mt=12
+        - Velja: https://apps.apple.com/us/app/velja/id1607635845?mt=12
+        - Recipe Keeper: https://apps.apple.com/us/app/recipe-keeper/id1315583175?mt=12
+        - Drop Over: https://apps.apple.com/us/app/dropover-easier-drag-drop/id1355679052?mt=12
+        - HomeControl Menu: https://apps.apple.com/us/app/homecontrol-menu-for-homekit/id1547121417?mt=12
+        - Fantastical: https://apps.apple.com/us/app/fantastical-calendar/id975937182?mt=12
+        - Affinity Photo: https://apps.apple.com/us/app/affinity-photo/id824183456?mt=12
+        - Affinity Designer: https://apps.apple.com/us/app/affinity-designer/id824171161?mt=12
+        - Affinity Publisher: https://apps.apple.com/us/app/affinity-publisher/id881418622?mt=12
+        - Spaces: https://apps.apple.com/us/app/spaces/id1509611686
+        - Things 3: https://apps.apple.com/us/app/things-3/id904280696?mt=12
+        - Parcel: https://apps.apple.com/us/app/parcel-delivery-tracking/id639968404?mt=12
+        - Home Cam: https://apps.apple.com/us/app/homecam-for-homekit/id1292995895
+        - Home Pass: https://apps.apple.com/us/app/homepass-for-homekit/id1330266650
+        - Microsoft Word: https://apps.apple.com/us/app/microsoft-word/id462054704?mt=12
+        - Microsoft Excel: https://apps.apple.com/us/app/microsoft-excel/id462058435?mt=12
+        - Microsoft Outlook: https://apps.apple.com/us/app/microsoft-outlook/id985367838?mt=12
+        - Daisy Disk: https://apps.apple.com/us/app/daisydisk/id411643860?mt=12
+        - Trello: https://apps.apple.com/us/app/trello/id1278508951?mt=12
+        - Magnet: https://apps.apple.com/us/app/magnet/id441258766?mt=12
+        - MacTracker: https://apps.apple.com/us/app/mactracker/id430255202?mt=12
+        - Final Cut Pro: https://apps.apple.com/us/app/final-cut-pro/id424389933?mt=12
+        - Xcode: https://apps.apple.com/us/app/xcode/id497799835?mt=12
