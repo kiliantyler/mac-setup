@@ -65,6 +65,7 @@ brew:
     - homebrew/cask-fonts
     - homebrew/core
     - 1password/tap
+    - DamascenoRafael/tap
     - hpedrorodrigues/tools
     - liamg/tfsec
     - pulumi/tap
@@ -87,6 +88,7 @@ brew:
     - powershell
     - rancher
     - raycast
+    - reminders-menubar
     - setapp
     - shottr
     - slack
@@ -122,12 +124,51 @@ asdf:
 code:
   extensions:
     - fake
+aliases:
+  - upgrade: topgrade
 
 Notes:
   - alias-tips: https://github.com/djui/alias-tips
   - direnv: https://github.com/asdf-community/asdf-direnv#setup
 Manual:
-  - https://github.com/dteare/opbookmarks/releases
-
-aliases:
-  - upgrade: topgrade
+  Setapp:
+    - Boom3D
+    - iStat Menus
+    - Paste
+    - One Switch
+    - Almighty
+    - CleanShotX
+    - Toothfairy
+    - Bartender
+    - Dropzone
+    - Batteries
+    - Bettertouchtool
+    - SQLPro Studio
+    - Chronicle
+    - CleanMyMacX
+    - DisplayBuddy
+    - Meeter
+  AppStore:
+    - PullBar: https://apps.apple.com/ca/app/pullbar/id1601913905?mt=12
+    - Velja: https://apps.apple.com/us/app/velja/id1607635845?mt=12
+    - Recipe Keeper: https://apps.apple.com/us/app/recipe-keeper/id1315583175?mt=12
+    - Drop Over: https://apps.apple.com/us/app/dropover-easier-drag-drop/id1355679052?mt=12
+    - HomeControl Menu: https://apps.apple.com/us/app/homecontrol-menu-for-homekit/id1547121417?mt=12
+    - Fantastical: https://apps.apple.com/us/app/fantastical-calendar/id975937182?mt=12
+    - Affinity Photo: https://apps.apple.com/us/app/affinity-photo/id824183456?mt=12
+    - Affinity Designer: https://apps.apple.com/us/app/affinity-designer/id824171161?mt=12
+    - Affinity Publisher: https://apps.apple.com/us/app/affinity-publisher/id881418622?mt=12
+    - Spaces: https://apps.apple.com/us/app/spaces/id1509611686
+    - Things 3: https://apps.apple.com/us/app/things-3/id904280696?mt=12
+    - Parcel: https://apps.apple.com/us/app/parcel-delivery-tracking/id639968404?mt=12
+    - Home Cam: https://apps.apple.com/us/app/homecam-for-homekit/id1292995895
+    - Home Pass: https://apps.apple.com/us/app/homepass-for-homekit/id1330266650
+    - Microsoft Word: https://apps.apple.com/us/app/microsoft-word/id462054704?mt=12
+    - Microsoft Excel: https://apps.apple.com/us/app/microsoft-excel/id462058435?mt=12
+    - Microsoft Outlook: https://apps.apple.com/us/app/microsoft-outlook/id985367838?mt=12
+    - Daisy Disk: https://apps.apple.com/us/app/daisydisk/id411643860?mt=12
+    - Trello: https://apps.apple.com/us/app/trello/id1278508951?mt=12
+    - Magnet: https://apps.apple.com/us/app/magnet/id441258766?mt=12
+    - MacTracker: https://apps.apple.com/us/app/mactracker/id430255202?mt=12
+    - Final Cut Pro: https://apps.apple.com/us/app/final-cut-pro/id424389933?mt=12
+    - Xcode: https://apps.apple.com/us/app/xcode/id497799835?mt=12
