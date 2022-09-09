@@ -98,6 +98,10 @@ INSTALL_PIP_PROGRAMS: INSTALL_PIPX
 INSTALL_ASDF_PROGRAMS:
 	asdfinstall things.yaml || (echo "Error installing asdf programs"; exit 1)
 
+SETUP_1PASSWORD:
+	macos/1password.sh
+
+
 endif
 
 $(V).SILENT:

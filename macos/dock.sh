@@ -1,4 +1,7 @@
 #!/bin/bash
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+# shellcheck source=./macos/bash_library
+source "${SCRIPT_DIR}/bash_library"
 
 # Move dock to left side of screen (Horizonal realestate is larger than vertical)
 defaults write com.apple.Dock orientation left
