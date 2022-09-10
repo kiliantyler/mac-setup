@@ -1,7 +1,7 @@
 OS := $(shell bin/is-supported bin/is-macos macos)
 DOTFILES_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 HOMEBREW_PREFIX := $(shell bin/is-supported bin/is-arm64 /opt/homebrew /usr/local)
-export PATH := /usr/local/bin:$(HOME)/.asdf/shims:$(HOMEBREW_PREFIX)/bin:$(DOTFILES_DIR)/bin:$(PATH)
+export PATH := /usr/local/bin:$(HOME)/.asdf/shims:$(HOMEBREW_PREFIX)/bin:$(DOTFILES_DIR)/bin:$(DOTFILES_DIR)/scripts:$(DOTFILES_DIR)/macos:$(PATH)
 export STOW_DIR = $(DOTFILES_DIR)
 export ACCEPT_EULA=Y
 USER := $(shell whoami)
@@ -79,7 +79,7 @@ INSTALL_FORMULAS: INSTALL_HOMEBREW CREATE_BREWFILE
 	xattr -d -r com.apple.quarantine ~/Library/QuickLook
 
 CREATE_BREWFILE:
-	makebrew things.yaml || (echo "Error creating Brewfile"; exit 1)
+	makebrew.sh things.yaml || (echo "Error creating Brewfile"; exit 1)
 
 CREATE_CODEFILE:
 	makecode things.yaml || (echo "Error creating Codefile"; exit 1)

@@ -1,35 +1,107 @@
 # mac-setup
 
-#### DOTFILES:
+## Makefile
 
-#### ADD_SUDO:
+### DOTFILES:
+Copies config files from the `dotfiles` directory into their respective locations. This is a separate repo to allow others to use this easily
 
-#### INSTALL_HOMEBREW:
+### ADD_SUDO:
+Adds yourself as a sudoer with NOPASSWD enabled
 
-#### POST_INSTALL_HOMEBREW:
+### INSTALL_HOMEBREW:
+Installs homebrew from brew.sh using their install script
 
-#### INSTALL_YQ:
+### POST_INSTALL_HOMEBREW:
+Temporarialy installs the `brew` shim to `.zprofile` so the rest of the makefile works before symlinking dotfiles (Needs to install `stow` using homebrew to do the symlinking)
 
-#### INSTALL_STOW:
+### INSTALL_YQ:
+`yq` is a YAML compliant version of `jq` -- `things.yaml` is read using this
 
-#### INSTALL_OHMYZSH:
+### INSTALL_STOW:
+`stow` helps with the symlinking of dotfiles
 
-#### INSTALL_OMZSH_THEMES:
+### INSTALL_OHMYZSH:
+ZSH Plugin/Theme manager
 
-#### INSTALL_OMZSH_PLUGINS:
+### INSTALL_OMZSH_THEMES:
+Installs Oh-my-zsh Themes defined in `things.yaml`
 
-#### INSTALL_FORMULAS:
+### INSTALL_OMZSH_PLUGINS:
+Installs Oh-my-zsh plugins defined in `things.yaml`
 
-#### CREATE_BREWFILE:
+### INSTALL_FORMULAS:
+Installs all formulas/taps/casks using homebrew
 
-#### CREATE_CODEFILE:
+### CREATE_BREWFILE:
+Helper for `INSTALL_FORMULAS` -- creates a Brewfile to pass in so that it does not have to install 1 at a time
 
-#### TFENV_SETUP:
+### CREATE_CODEFILE:
+[Unused] Eventually will install VSCode extensions
 
-#### INSTALL_PIPX: 
+### TFENV_SETUP:
+Installs/uses latest version of terraform
 
-#### INSTALL_PIP_PROGRAMS:
+### INSTALL_PIPX:
+Install `pipx` using `pip` -- so that all pip installs will use `pipx`
 
-#### INSTALL_ASDF_PROGRAMS:
+### INSTALL_PIP_PROGRAMS:
+Installs all pip programs listed in `things.yaml` using `pipx`
 
-#### SETUP_1PASSWORD:
+### INSTALL_ASDF_PROGRAMS:
+Installs all tools listed in `things.yaml` for `asdf` and uses the latest version of each (`asdf` needs to be in `brew` installs)
+
+### SETUP_1PASSWORD:
+Sets up the `agent.sock` symlink for 1Password -- this allows a Unix normal version of the `agent.sock` to be used for SSH Keys
+
+## Helper executables
+Located in the `bin` directory, return true (`exit 0`) or false (`exit 1`)
+
+### is-arm64
+Checks if the mac running the makefile is `ARM64` or not (`intel`)
+
+### is-executable
+Checks if input program is installed and executable
+
+### is-folder
+Checks if input folder exists
+
+### is-grep
+Greps for string (`$1`) in file (`$2`)
+
+### is-macos
+Verifies if running on `macos` or not (`linux`/`wsl2`)
+
+### is-supported
+Runs `eval` on input program to see if it runs
+
+## Helper scripts
+Located in `scripts` -- run various things, like installs or checks
+
+### asdfinstall
+Installs asdf programs from `things.yaml` and sets them as global default to the latest
+
+### makebrew.sh
+Creates a `brew` readable `Brewfile` from `things.yaml`
+
+### makecode.sh
+Creates a `codefile` from `things.yaml` for future VSCode use
+
+## MacOS Scripts
+
+### bash_library
+functions for other scripts
+
+### 1password.sh
+Setup 1password to be usable by SSH for keys
+
+### dock.sh
+Sets up the dock in the way that is most productive (for me)
+
+### finder.sh
+[Unused] Sets up finder in the way that is most productive (for me)
+
+### generic.sh
+Various other Mac toggles
+
+### mas.sh
+[Unused] Mac App Store installer, if `mas` gets updated to work with Ventura then this will function
