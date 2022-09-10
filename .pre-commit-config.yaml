@@ -30,3 +30,7 @@ repos:
       rev: 0.2.2
       hooks:
           - id: yamlfmt
+    - repo: https://github.com/erikogan/prevent-submodule-regression
+      rev: v0.1.2
+      hooks:
+          - id: prevent-submodule-regression
