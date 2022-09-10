@@ -62,6 +62,9 @@ Checks if the mac running the makefile is `ARM64` or not (`intel`)
 ### is-executable
 Checks if input program is installed and executable
 
+### is-file
+Checks if input file exists
+
 ### is-folder
 Checks if input folder exists
 

@@ -32,7 +32,7 @@ function create_dir() {
     exit 1
   fi
   .log 7 "Input directory: ${dir}"
-  if [ -d  "${dir}" ]; then
+  if is-folder "${dir}"; then
     .log 7 "Input directory (${dir}) exists"
   else
     .log 6 "Input directory (${dir}) does not exist, creating"
