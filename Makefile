@@ -21,8 +21,8 @@ DOTFILES := $(addprefix $(HOME)/,$(HOMEFILES))
 
 ifeq "$(OS)" "macos"
 
-TEST:
-	cat ~/.zprofile
+ALL:
+	
 
 DOTFILES:
 
