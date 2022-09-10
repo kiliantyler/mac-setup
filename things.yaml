@@ -42,6 +42,7 @@ brew:
         - imageoptim-cli
         - infracost
         - mackup
+        - mr
         - nano
         - openssl
         - pre-commit
