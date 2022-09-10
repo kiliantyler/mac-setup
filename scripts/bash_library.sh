@@ -101,3 +101,7 @@ function color() {
   *) ;;
   esac
 }
+
+.log -l 7 "Successfully sourced bash_library.sh"
+scriptName="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
+.log -l 7 "Running ${scriptName}"
