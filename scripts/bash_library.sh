@@ -15,8 +15,9 @@ function .log () {
     echo "[err] Log level setup incorrectly in input script (This is not an error with bash_library)" >&2; exit 1
   fi
 
-  #Print with level added
-  if [ ${V} -ge "${LEVEL}" ]; then
+  # Print with level added
+  # shellcheck disable=SC2086
+  if [ ${V} -ge ${LEVEL} ]; then
     echo "[${LOG_LEVELS[$LEVEL]}]" "$@"
   fi
 }

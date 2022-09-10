@@ -1,6 +1,6 @@
 #!/bin/bash
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-# shellcheck source=./scripts/bash_library.sh
+# shellcheck source=/dev/null
 source "${SCRIPT_DIR}/../scripts/bash_library.sh"
 
 # Move dock to left side of screen (Horizonal realestate is larger than vertical)

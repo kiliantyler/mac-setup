@@ -1,6 +1,6 @@
 #!/bin/bash
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-# shellcheck source=./scripts/bash_library.sh
+# shellcheck source=/dev/null
 source "${SCRIPT_DIR}/../scripts/bash_library.sh"
 
 agentSock="${HOME}/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
