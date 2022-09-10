@@ -16,7 +16,7 @@ function .log () {
   fi
 
   #Print with level added
-  if [ ${V} -ge ${LEVEL} ]; then
+  if [ ${V} -ge "${LEVEL}" ]; then
     echo "[${LOG_LEVELS[$LEVEL]}]" "$@"
   fi
 }

@@ -1,7 +1,7 @@
 #!/bin/bash
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-# shellcheck source=./macos/bash_library
-source "${SCRIPT_DIR}/bash_library"
+# shellcheck source=./scripts/bash_library.sh
+source "${SCRIPT_DIR}/../scripts/bash_library.sh"
 
 agentSock="${HOME}/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 dotFolder="${HOME}/.1password"

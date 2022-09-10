@@ -77,6 +77,9 @@ Runs `eval` on input program to see if it runs
 ## Helper scripts
 Located in `scripts` -- run various things, like installs or checks
 
+### bash_library.sh
+functions for other scripts
+
 ### asdfinstall
 Installs asdf programs from `things.yaml` and sets them as global default to the latest
 
@@ -87,9 +90,6 @@ Creates a `brew` readable `Brewfile` from `things.yaml`
 Creates a `codefile` from `things.yaml` for future VSCode use
 
 ## MacOS Scripts
-
-### bash_library
-functions for other scripts
 
 ### 1password.sh
 Setup 1password to be usable by SSH for keys
