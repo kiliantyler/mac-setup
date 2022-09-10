@@ -76,7 +76,6 @@ INSTALL_OMZSH_PLUGINS:
 
 INSTALL_FORMULAS: INSTALL_HOMEBREW CREATE_BREWFILE
 	brew bundle --file=$(DOTFILES_DIR)/install/Brewfile || true
-	xattr -d -r com.apple.quarantine ~/Library/QuickLook
 
 CREATE_BREWFILE:
 	makebrew.sh things.yaml || (echo "Error creating Brewfile"; exit 1)

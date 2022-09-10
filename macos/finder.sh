@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 # Show path bar
 # Show status bar
 # Add Airdrop icon
