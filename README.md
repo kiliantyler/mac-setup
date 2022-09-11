@@ -2,17 +2,53 @@
 
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
-#### Table of Content
+#### Table of Contents
 <!--TOC-->
 
-- [mac-setup](#mac-setup)
-  - [File Contents](#file-contents)
-    - [Makefile](#makefile)
-    - [Helper executables](#helper-executables)
-    - [Helper scripts](#helper-scripts)
-    - [MacOS Scripts](#macos-scripts)
+- [Installation](#installation)
+- [File Contents](#file-contents)
+  - [Makefile](#makefile)
+    - [DOTFILES:](#dotfiles)
+    - [ADD_SUDO:](#add_sudo)
+    - [INSTALL_HOMEBREW:](#install_homebrew)
+    - [POST_INSTALL_HOMEBREW:](#post_install_homebrew)
+    - [INSTALL_YQ:](#install_yq)
+    - [INSTALL_STOW:](#install_stow)
+    - [INSTALL_OHMYZSH:](#install_ohmyzsh)
+    - [INSTALL_OMZSH_THEMES:](#install_omzsh_themes)
+    - [INSTALL_OMZSH_PLUGINS:](#install_omzsh_plugins)
+    - [INSTALL_FORMULAS:](#install_formulas)
+    - [CREATE_BREWFILE:](#create_brewfile)
+    - [CREATE_CODEFILE:](#create_codefile)
+    - [TFENV_SETUP:](#tfenv_setup)
+    - [INSTALL_PIPX:](#install_pipx)
+    - [INSTALL_PIP_PROGRAMS:](#install_pip_programs)
+    - [INSTALL_ASDF_PROGRAMS:](#install_asdf_programs)
+    - [SETUP_1PASSWORD:](#setup_1password)
+  - [Helper executables](#helper-executables)
+    - [is-arm64](#is-arm64)
+    - [is-executable](#is-executable)
+    - [is-file](#is-file)
+    - [is-folder](#is-folder)
+    - [is-grep](#is-grep)
+    - [is-macos](#is-macos)
+    - [is-supported](#is-supported)
+    - [is-symlink](#is-symlink)
+  - [Helper scripts](#helper-scripts)
+    - [bash_library.sh](#bash_librarysh)
+    - [asdfinstall](#asdfinstall)
+    - [makebrew.sh](#makebrewsh)
+    - [makecode.sh](#makecodesh)
+  - [MacOS Scripts](#macos-scripts)
+    - [1password.sh](#1passwordsh)
+    - [dock.sh](#docksh)
+    - [finder.sh](#findersh)
+    - [generic.sh](#genericsh)
+    - [mas.sh](#massh)
 
 <!--TOC-->
+
+## Installation
 
 ## File Contents
 

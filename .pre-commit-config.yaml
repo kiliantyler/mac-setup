@@ -16,7 +16,7 @@ repos:
       rev: 8.1.4
       hooks:
           - id: md-toc
-            args: [-p, github]
+            args: [-s7, -c, -p, github, -l6]
     - repo: https://github.com/pecigonzalo/pre-commit-shfmt
       rev: v2.1.0
       hooks:
