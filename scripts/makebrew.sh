@@ -6,18 +6,18 @@ source "${SCRIPT_DIR}/../scripts/bash_library.sh"
 yamlfile=$1
 installDir="install"
 
-check_yaml "${yamlfile}"
+check_file "${yamlfile}"
 create_dir "${installDir}"
 
 brewfile="${installDir}/Brewfile"
 .log -l 5 "Brewfile: ${brewfile}"
 
 taps=$(yq '.brew.taps.[]' "$yamlfile")
-.log -l 7 "Taps: ${taps}"
+.log "Taps: ${taps}"
 casks=$(yq '.brew.casks.[]' "$yamlfile")
-.log -l 7 "Casks: ${casks}"
+.log "Casks: ${casks}"
 brews=$(yq '.brew.formulas.[]' "$yamlfile")
-.log -l 7 "Brews: ${brews}"
+.log "Brews: ${brews}"
 
 .log -l 6 "Emptying Brewfile (${brewfile})"
 echo -n "" > ${brewfile}

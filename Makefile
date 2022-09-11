@@ -14,18 +14,19 @@ BREW=/usr/local/bin/brew
 BREW_CMD=brew
 endif
 
-HOMEFILES := $(shell ls -A $(HOME))
-DOTFILES := $(addprefix $(HOME)/,$(HOMEFILES))
 
-.PHONY: TEST
+.PHONY: TEST DOTFILES
 
 ifeq "$(OS)" "macos"
+
+TEST:
+	test.sh || (echo "Error running test.sh"; exit 1)
 
 ALL:
 
 
 DOTFILES:
-
+	dotfiles.sh || (echo "Error with dotfiles.sh"; exit 1)
 
 ADD_SUDO: SUDOERS_FILE=/private/etc/sudoers.d/$(USER)
 ADD_SUDO:
@@ -58,7 +59,7 @@ INSTALL_OMZSH_THEMES:
 	echo "Updating $${folder}: "; \
 	git -C "$${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/themes/$${folder}" pull; \
 	fi \
-	done
+	done # TODO: move this to a script
 
 INSTALL_OMZSH_PLUGINS:
 	PLUGINS="$(shell yq '.zsh.oh-my-zsh.plugins | to_entries | .[] | (.key + "|" +.value)' things.yaml)"; \
@@ -72,7 +73,7 @@ INSTALL_OMZSH_PLUGINS:
 	echo "Updating $${folder}: "; \
 	git -C "$${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/plugins/$${folder}" pull; \
 	fi \
-	done
+	done # TODO: move this to a script
 
 INSTALL_FORMULAS: INSTALL_HOMEBREW CREATE_BREWFILE
 	brew bundle --file=$(DOTFILES_DIR)/install/Brewfile || true

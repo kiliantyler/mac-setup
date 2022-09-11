@@ -5,15 +5,24 @@ export PATH="${SCRIPT_DIR}/../bin:${PATH}"
 libName="bash_library.sh"
 scriptName="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
 logDir="${mainDir}/logs"
+libraryBackupDir="${mainDir}/backup"
 mkdir -p "${logDir}" > /dev/null 2>&1
 logFile="${logDir}/${scriptName}.log"
 
 # https://en.wikipedia.org/wiki/Syslog#Severity_level
 LOG_LEVELS=([0]="EMERG " [1]="ALERT " [2]="CRIT  " [3]="ERROR " [4]="WARN  " [5]="NOTICE" [6]="INFO  " [7]="DEBUG ")
 LOG_COLORS=([0]="red"    [1]="red"    [2]="red"    [3]="lred"    [4]="yellow" [5]="cyan"  [6]="green"  [7]="lgrey")
+
+# This must be first, every other function uses it
+# Input Params
+# OPTIONAL: --level = Level of Log from ${LOG_LEVELS} (default: '7' [DEBUG])
+# --no-exit = Do not fail even when above the CRIT (2) threshold (default: false)
+# $@ = Log text to output
 function .log () {
+  # All locals so that variables are always reset
   local NOFAIL=0
   local LEVEL=7
+  local color
   while [[ $# -gt 1 ]]; do
     local key="$1";
     case $key in
@@ -29,106 +38,178 @@ function .log () {
     esac
     shift
   done
-  # Validate Verbosity is set, if not set to reasonable level
+  # Validate Verbosity is set, if not set to reasonable level Error (3)
   if [ -z ${V:+x} ]; then V=3; fi
-  # Validate input is in correct format
-  re='^[0-9]+$'
-  if ! [[ ${LEVEL} =~ $re ]] ; then
-    local color
-    color=$(color "red")
-    echo "[error ] Log level setup incorrectly in input script (This is not an error with '${FUNCNAME[0]}' nor '${libName}'" >&2 | tee >(decolor >> "${logFile}"); exit 1
-  fi
+  # Validate ${Level} is in correct format (INT 0-9)
   local date
   date=$(date '+%Y-%m-%d %H:%M:%S')
-  local color
+  local restore
+  restore=$(color "restore")
+  if ! is-int "${LEVEL}"; then
+    local errorText="Log level setup incorrectly from input '${FUNCNAME[1]}' (This is not an error with '${FUNCNAME[0]}' nor '${libName}')"
+    .log -l 2 "${errorText}"
+  fi
   color=$(color "${LOG_COLORS[$LEVEL]}")
-  local restore='\033[0m'
   # Print with level added
   if [ ${V} -ge "${LEVEL}" ]; then
-    echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}]" "$1" | tee >(decolor >> "${logFile}")
+    echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}](${FUNCNAME[1]}): $1" | tee >(decolor >> "${logFile}")
   else
-    echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}]" "$1" | decolor >> "${logFile}"
+    # ALWAYS log the output
+    echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}](${FUNCNAME[1]}): $1" | decolor >> "${logFile}"
   fi
   if [ ${NOFAIL} -eq 0 ]; then
-    if [ "${LEVEL}" -lt 4 ]; then
-      echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}]" "NOFAIL not set, EXITING" | tee >(decolor >> "${logFile}")
+    if [ "${LEVEL}" -lt 3 ]; then
+      # If NOFAIL is not set, fail at CRITICAL (2) or higher
+      echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}](${FUNCNAME[1]}): NOFAIL not set, EXITING" | tee >(decolor >> "${logFile}")
       exit 1
     fi
   fi
 }
 
+# This must be second, the rest of the functions use it
+# Input the *Last* needed argument from a function
+# example: `init_func "${1}"` or `initFunc "${2}"` depending on arguments needed
+function init_func() {
+  .log "FUNC: '${FUNCNAME[1]}' from '${libName}'"
+  if [ -z ${1:+x} ]; then .log -l 2 "Arguments for '${FUNCNAME[1]}' were not set correctly"; fi
+  .log "Arguments for '${FUNCNAME[1]}' seemingly set correctly"
+}
+
+# $1 = directory to create
+# OPTIONAL/INTERNAL $2 = Runtime attempts (default '1')
 function create_dir() {
-  .log -l 7 "Running '${FUNCNAME[0]}' from '${libName}'"
-  if [ -z ${1:+x} ]; then .log -l 3 "Argument(s) for '${FUNCNAME[0]}' were not set correctly"; fi
+  init_func "${1}"
   local dir="${1}"
   if [ -z ${2:+x} ]; then runtime=1; else runtime=${2}; fi
   if [ "${runtime}" -ge 3 ]; then
     .log -l 2 "Attempted twice to create the directory (${dir}) and it has not worked"
   fi
-  .log -l 7 "Input directory: ${dir}"
+  .log "Input directory: ${dir}"
   if is-folder "${dir}"; then
     .log -l 6 "Input directory (${dir}) exists"
   else
     .log -l 6 "Input directory (${dir}) does not exist, creating"
     mkdir -p "${dir}" > /dev/null 2>&1
-    .log -l 7 "Rerunning '${FUNCNAME[0]}' on ${dir}"
+    .log "Rerunning '${FUNCNAME[0]}' on ${dir}"
     ${FUNCNAME[0]} "${dir}" $((runtime+1))
   fi
 }
 
-function check_yaml() {
-  .log -l 7 "Running '${FUNCNAME[0]}' from '${libName}'"
-  if [ -z "${1:+x}" ]; then .log -l 3 "Argument(s) for '${FUNCNAME[0]}' were not set correctly"; fi
-  local yamlfile="${1}"
-  .log -l 7 "YAML File is '${yamlfile}'"
-  if is-file "${yamlfile}"; then
-    .log -l 6 "File ($yamlfile) found"
+# $1 = file to check
+function check_file() {
+  init_func "${1}"
+  local file="${1}"
+  .log "File is '${file}'"
+  if is-file "${file}"; then
+    .log -l 6 "File ($file) found"
+    return 0
   else
-    .log -l 2 "File ($yamlfile) not found, exiting"
+    .log -l 2 "File ($file) not found, exiting"
   fi
 }
 
-function color() {
-  local color=${1}
-  case "${color}" in
-  "red")
-    echo '\033[38;5;196m' ;;
-  "lred")
-    echo '\033[38;5;198m' ;;
-  "green")
-    echo '\033[38;5;10m' ;;
-  "yellow")
-    echo '\033[38;5;226m' ;;
-  "lyellow")
-    echo '\033[38;5;228m' ;;
-  "cyan")
-    echo '\033[38;5;6m' ;;
-  "white")
-    echo '\033[01;37m' ;;
-  "lgrey")
-    echo '\033[00;37m' ;;
-  *) ;;
-  esac
+# $1 = file to be deleted
+function delete_file() {
+  init_func "${1}"
+  local file="${1}"
+  check_file "${file}"
+  .log "Deleting '${file}'"
+  if rm -f "${file}" >/dev/null 2>&1; then
+    .log -l 5 "Deleted '${file}' successfully"
+    return 0
+  else
+    .log -l 2 "Failed to delete '${file}'"
+  fi
+}
+
+# $1 = file to copy (whole path)
+# $2 = file copy destination (whole path)
+function copy_file() {
+  init_func "${2}"
+  local filePreCopy="${1}"
+  local filePostCopy="${2}"
+  .log -l 6 "Copying '${filePreCopy}' -> '${filePostCopy}'"
+  if cp "${filePreCopy}" "${filePostCopy}" > /dev/null 2>&1; then
+    if check_file "${filePostCopy}"; then
+      .log "${filePostCopy} copied successfully"
+    fi
+  else
+    .log -l 2 "File (${filePreCopy}) failed to copy (${filePostCopy})"
+  fi
+}
+
+# $1 = file to roll to an older backup
+# $2 = copies to keep
+# $3 = times run
+function roll_file() {
+  init_func "${3}"
+  local orgFile="${1}"
+  local copiesToKeep="${2}"
+  local runTimes="${3}"
+  local file="${orgFile}"
+  if ! is-int "${copiesToKeep}"; then .log -l 2 "'copiesToKeep' not an INT"; fi
+  if ! is-int "${runTimes}"; then .log -l 2 "'runTimes' not an INT"; fi
+  if [ "${runTimes}" -gt 1 ]; then file="${orgFile}.$((runTimes-1))"; fi
+  if ! is-file "${file}"; then .log "File (${file}) not found, no roll needed"; return 0; fi
+  .log -l 6 "File found '${file}"
+  if [ "${runTimes}" -lt "${copiesToKeep}" ]; then
+    if ${FUNCNAME[0]} "${orgFile}" "${copiesToKeep}" "$((runTimes+1))"; then
+      .log "${file} is ready to be rolled"
+      copy_file "${file}" "${orgFile}.$((runTimes))"
+      delete_file "${file}"
+      return 0
+    else
+      .log -l 2 "'${FUNCNAME[0]} ${orgFile} ${copiesToKeep} $((runTimes+1))' FAILED"
+    fi
+  fi
+  .log "${file} needs to be deleted since it is the maximum backup number"
+  delete_file "${file}"
+  return 0
 }
 
 # $1 = File to backup
-# $2 = Backup Location
+# Input Params
+# OPTIONAL: --dir = Backup directory (default '${libraryBackupDir}')
+# OPTIONAL: --count = Copies to keep (default '5')
 function backup_file() {
-  .log -l 7 "Running backup_file from '${libName}'"
-  if [ -z ${2+x} ]; then .log -l 3 "Arguments for '${FUNCNAME[0]}' were not set correctly"; fi
+  local count=5
+  local backupDir=${libraryBackupDir}
+  while [[ $# -gt 1 ]]; do
+    local key="$1";
+    case $key in
+        -c|--count)
+            count="${2}"
+            shift
+        ;;
+        -d|--dir)
+            backupDir="${2}"
+        ;;
+        *)
+        ;;
+    esac
+    shift
+  done
+  init_func "${1}"
   local file="${1}"
-  local rootDir="${2}"
-  echo " Nothing yet: ${file} ${rootDir}"
+  .log "Input file: '${file}'"
+  .log "Backup directory set to '${backupDir}'"
+  create_dir "${backupDir}"
+  if ! is-file "${file}"; then .log -l 2 "File (${file}) not found, cannot continue"; fi
+  local fileName
+  fileName="$(basename "${file}")"
+  .log "Filename found: '${fileName}'"
+  backupFile="${backupDir}/${fileName}.old"
+  roll_file "${backupFile}" "${count}" 1
+  copy_file "${file}" "${backupFile}"
 }
 
 # $1 = File to check
 # $2 = Expected path of symlink
 function check_filelink() {
-  .log -l 7 "Running '${FUNCNAME[0]}' from '${libName}'"
-  if [ -z ${2:+x} ]; then .log -l 3 "Arguments for '${FUNCNAME[0]}' were not set correctly"; fi
+  init_func "${2}"
   local symLinkedFile=${1}
   local expectedPath=${2}
-  if ! is-symlink "${symLinkedFile}"; then .log -l 3 "File (${symLinkedFile}) is not a Symlink!"; fi
+  if ! is-symlink "${symLinkedFile}"; then .log -l 2 "File (${symLinkedFile}) is not a Symlink!"; fi
   local symLinkLocation
   symLinkLocation=$(readlink -f "${symLinkedFile}")
   if [ "${symLinkLocation}" == "${expectedPath}" ]; then
@@ -139,7 +220,22 @@ function check_filelink() {
     return 1
   fi
 }
+
+# $1 = directory to stow
+# OPTIONAL: $2 = directory to stow INTO (default: ${HOME})
+function stow_folder() {
+  init_func "${1}"
+  local dir="${1}"
+  .log "Looking to 'stow' directory '${dir}'"
+  local stowDir="${HOME}"
+  if [ -n "${2:+x}" ]; then stowDir=${2}; fi
+  .log "Stowing files in '${stowDir}'"
+  if ! is-folder "${dir}"; then .log -2 "'${dir}' is NOT a directory!"; fi
+  # if stow -d "${1}" -t "${stowDir}"
+}
+
+# Just to verify the log directory exists, fails if it cannot create
 create_dir "${logDir}"
 # Run some Debug logs on every script that sources
-.log -l 7 "Successfully sourced ${libName}"
-.log -l 7 "Running script: ${scriptName}"
+.log "Successfully sourced ${libName}"
+.log "Running script: ${scriptName}"

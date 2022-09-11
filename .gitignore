@@ -4,3 +4,4 @@ install/Brewfile.lock.json
 .DS_Store
 test.sh
 logs
+backup

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-if [ -a "$1" ]; then
+re='^[0-9]+$'
+if [[ ${1} =~ $re ]] ; then
   exit 0
 else
   exit 1

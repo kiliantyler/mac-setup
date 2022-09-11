@@ -17,16 +17,14 @@ repos:
       hooks:
           - id: md-toc
             args: [-s30, -c, -p, github, -l6]
-    - repo: https://github.com/pecigonzalo/pre-commit-shfmt
-      rev: v2.1.0
+    - repo: https://github.com/jumanjihouse/pre-commit-hooks
+      rev: 3.0.0
       hooks:
-          - id: shell-fmt
+          - id: forbid-binary
+          - id: shfmt
             args:
                 - -i
                 - '2'
-    - repo: https://github.com/koalaman/shellcheck-precommit
-      rev: v0.8.0
-      hooks:
           - id: shellcheck
             args:
                 - -x
@@ -42,7 +40,6 @@ repos:
       hooks:
           - id: yamllint
             args: [--format, parsable, --strict]
-
     - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
       rev: 0.2.2
       hooks:
@@ -51,3 +48,5 @@ repos:
       rev: v0.1.2
       hooks:
           - id: prevent-submodule-regression
+ci:
+    skip: [shfmt, shellcheck]

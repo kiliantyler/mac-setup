@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+color=${1}
+case "${color}" in
+"red")
+  echo '\033[38;5;196m' ;;
+"lred")
+  echo '\033[38;5;198m' ;;
+"green")
+  echo '\033[38;5;10m' ;;
+"yellow")
+  echo '\033[38;5;226m' ;;
+"lyellow")
+  echo '\033[38;5;228m' ;;
+"cyan")
+  echo '\033[38;5;6m' ;;
+"white")
+  echo '\033[01;37m' ;;
+"lgrey")
+  echo '\033[00;37m' ;;
+"restore")
+  echo '\033[0m' ;;
+*) ;;
+esac
