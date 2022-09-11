@@ -35,6 +35,7 @@
     - [INSTALL_ASDF_PROGRAMS:](#install_asdf_programs)
     - [SETUP_1PASSWORD:](#setup_1password)
   - [Helper executables](#helper-executables)
+    - [color](#color)
     - [decolor](#decolor)
     - [is-arm64](#is-arm64)
     - [is-executable](#is-executable)
@@ -119,6 +120,9 @@ Sets up the `agent.sock` symlink for 1Password -- this allows a Unix normal vers
 
 ### Helper executables
 Located in the `bin` directory, *most* return true (`exit 0`) or false (`exit 1`)
+
+###### color
+Adds color to an echo statement (used for stdout)
 
 ###### decolor
 Strips color coding from echo statements (used for logging)
