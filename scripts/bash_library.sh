@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 export PATH="${SCRIPT_DIR}/../bin:${PATH}"
+libName="bash_library.sh"
 
 # https://en.wikipedia.org/wiki/Syslog#Severity_level
 LOG_LEVELS=([0]="EMERG " [1]="ALERT " [2]="CRIT  " [3]="ERROR " [4]="WARN  " [5]="NOTICE" [6]="INFO  " [7]="DEBUG ")
@@ -9,14 +10,14 @@ function .log () {
   local NOFAIL=0
   local LEVEL=7
   while [[ $# -gt 1 ]]; do
-    key="$1";
+    local key="$1";
     case $key in
         -l|--level)
-            local LEVEL="$2"
+            LEVEL="$2"
             shift
         ;;
         -n|--no-exit)
-            local NOFAIL=1
+            NOFAIL=1
         ;;
         *)
         ;;
@@ -30,6 +31,7 @@ function .log () {
   # Validate input is in correct format
   re='^[0-9]+$'
   if ! [[ ${LEVEL} =~ $re ]] ; then
+    local color
     color=$(color "red")
     echo "[error ] Log level setup incorrectly in input script (This is not an error with bash_library)" >&2; exit 1
   fi
@@ -37,7 +39,9 @@ function .log () {
   # Print with level added
   # shellcheck disable=SC2086
   if [ ${V} -ge ${LEVEL} ]; then
+    local date
     date=$(date '+%Y-%m-%d %H:%M:%S')
+    local color
     color=$(color ${LOG_COLORS[$LEVEL]})
     restore='\033[0m'
     echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}]" "$1"
@@ -51,8 +55,8 @@ function .log () {
 }
 
 function create_dir() {
-  .log -l 7 "Running 'check_dir' from 'bash_library.sh'"
-  dir="${1}"
+  .log -l 7 "Running 'check_dir' from '${libName}'"
+  local dir="${1}"
   if [ -z ${2+x} ]; then runtime=1; else runtime=${2}; fi
   if [ "${runtime}" -ge 3 ]; then
     .log -l 2 "Attempted twice to create the directory (${dir}) and it has not worked"
@@ -64,13 +68,13 @@ function create_dir() {
     .log -l 6 "Input directory (${dir}) does not exist, creating"
     mkdir -p "${dir}" > /dev/null 2>&1
     .log -l 7 "Rerunning check_dir on ${dir}"
-    check_dir "${dir}" $((runtime+1))
+    create_dir "${dir}" $((runtime+1))
   fi
 }
 
 function check_yaml() {
-  .log -l 7 "Running 'check_yaml' from 'bash_library.sh'"
-  yamlfile="${1}"
+  .log -l 7 "Running 'check_yaml' from '${libName}'"
+  local yamlfile="${1}"
   .log -l 7 "YAML File is '${yamlfile}'"
   if is-file "${yamlfile}"; then
     .log -l 6 "File ($yamlfile) found"
@@ -80,7 +84,7 @@ function check_yaml() {
 }
 
 function color() {
-  color=${1}
+  local color=${1}
   case "${color}" in
   "red")
     echo '\033[38;5;196m' ;;
@@ -100,6 +104,31 @@ function color() {
     echo '\033[00;37m' ;;
   *) ;;
   esac
+}
+
+function backup_file() {
+  .log -l 7 "Running backup_file from '${libName}'"
+  if [ -z ${2+x} ]; then .log -l 3 "Arguments for 'backup_file' were not set correctly"; fi
+  local file="${1}"
+  local rootDir="${2}"
+  echo " Nothing yet: ${file} ${rootDir}"
+}
+
+function check_filelink() {
+  .log -l 7 "Running check_filelink from '${libName}'"
+  if [ -z ${2+x} ]; then .log -l 3 "Arguments for 'check_filelink' were not set correctly"; fi
+  local symLinkedFile=${1}
+  local expectedPath=${2}
+  if ! is-symlink "${symLinkedFile}"; then .log -l 3 "File (${symLinkedFile}) is not a Symlink!"; fi
+  local symLinkLocation
+  symLinkLocation=$(readlink -f "${symLinkedFile}")
+  if [ "${symLinkLocation}" == "${expectedPath}" ]; then
+    .log -l 6 "Symlinked file path (${symLinkLocation}) and expected path (${expectedPath}) match"
+    return 0
+  else
+    .log -l 4 "Symlinked file path (${symLinkLocation}) does not match Expected path (${expectedPath})"
+    return 1
+  fi
 }
 
 .log -l 7 "Successfully sourced bash_library.sh"
