@@ -1,5 +1,22 @@
 ---
 repos:
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.3.0
+      hooks:
+          - id: trailing-whitespace
+          - id: end-of-file-fixer
+          - id: check-yaml
+          - id: check-added-large-files
+          - id: destroyed-symlinks
+          - id: detect-private-key
+          - id: check-ast
+          - id: check-case-conflict
+          - id: debug-statements
+    - repo: https://codeberg.org/frnmst/md-toc
+      rev: 8.1.4
+      hooks:
+          - id: md-toc
+            args: [-p, github]
     - repo: https://github.com/pecigonzalo/pre-commit-shfmt
       rev: v2.1.0
       hooks:

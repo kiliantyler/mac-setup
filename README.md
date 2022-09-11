@@ -1,110 +1,135 @@
 # mac-setup
 
-## Makefile
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 
-### DOTFILES:
+#### Table of Content
+<!--TOC-->
+
+- [mac-setup](#mac-setup)
+  - [File Contents](#file-contents)
+    - [Makefile](#makefile)
+    - [Helper executables](#helper-executables)
+    - [Helper scripts](#helper-scripts)
+    - [MacOS Scripts](#macos-scripts)
+
+<!--TOC-->
+
+## File Contents
+
+### Makefile
+
+###### DOTFILES:
 Copies config files from the `dotfiles` directory into their respective locations. This is a separate repo to allow others to use this easily
 
-### ADD_SUDO:
+###### ADD_SUDO:
 Adds yourself as a sudoer with NOPASSWD enabled
 
-### INSTALL_HOMEBREW:
+###### INSTALL_HOMEBREW:
 Installs homebrew from brew.sh using their install script
 
-### POST_INSTALL_HOMEBREW:
+###### POST_INSTALL_HOMEBREW:
 Temporarialy installs the `brew` shim to `.zprofile` so the rest of the makefile works before symlinking dotfiles (Needs to install `stow` using homebrew to do the symlinking)
 
-### INSTALL_YQ:
+###### INSTALL_YQ:
 `yq` is a YAML compliant version of `jq` -- `things.yaml` is read using this
 
-### INSTALL_STOW:
+###### INSTALL_STOW:
 `stow` helps with the symlinking of dotfiles
 
-### INSTALL_OHMYZSH:
+###### INSTALL_OHMYZSH:
 ZSH Plugin/Theme manager
 
-### INSTALL_OMZSH_THEMES:
+###### INSTALL_OMZSH_THEMES:
 Installs Oh-my-zsh Themes defined in `things.yaml`
 
-### INSTALL_OMZSH_PLUGINS:
+###### INSTALL_OMZSH_PLUGINS:
 Installs Oh-my-zsh plugins defined in `things.yaml`
 
-### INSTALL_FORMULAS:
+###### INSTALL_FORMULAS:
 Installs all formulas/taps/casks using homebrew
 
-### CREATE_BREWFILE:
+###### CREATE_BREWFILE:
 Helper for `INSTALL_FORMULAS` -- creates a Brewfile to pass in so that it does not have to install 1 at a time
 
-### CREATE_CODEFILE:
+###### CREATE_CODEFILE:
 [Unused] Eventually will install VSCode extensions
 
-### TFENV_SETUP:
+###### TFENV_SETUP:
 Installs/uses latest version of terraform
 
-### INSTALL_PIPX:
+###### INSTALL_PIPX:
 Install `pipx` using `pip` -- so that all pip installs will use `pipx`
 
-### INSTALL_PIP_PROGRAMS:
+###### INSTALL_PIP_PROGRAMS:
 Installs all pip programs listed in `things.yaml` using `pipx`
 
-### INSTALL_ASDF_PROGRAMS:
+###### INSTALL_ASDF_PROGRAMS:
 Installs all tools listed in `things.yaml` for `asdf` and uses the latest version of each (`asdf` needs to be in `brew` installs)
 
-### SETUP_1PASSWORD:
+###### SETUP_1PASSWORD:
 Sets up the `agent.sock` symlink for 1Password -- this allows a Unix normal version of the `agent.sock` to be used for SSH Keys
 
-## Helper executables
+---
+
+### Helper executables
 Located in the `bin` directory, return true (`exit 0`) or false (`exit 1`)
 
-### is-arm64
+###### is-arm64
 Checks if the mac running the makefile is `ARM64` or not (`intel`)
 
-### is-executable
+###### is-executable
 Checks if input program is installed and executable
 
-### is-file
+###### is-file
 Checks if input file exists
 
-### is-folder
+###### is-folder
 Checks if input folder exists
 
-### is-grep
+###### is-grep
 Greps for string (`$1`) in file (`$2`)
 
-### is-macos
+###### is-macos
 Verifies if running on `macos` or not (`linux`/`wsl2`)
 
-### is-supported
+###### is-supported
 Runs `eval` on input program to see if it runs
 
-## Helper scripts
+###### is-symlink
+Checks if a file is a symlink or not
+
+---
+
+### Helper scripts
 Located in `scripts` -- run various things, like installs or checks
 
-### bash_library.sh
+###### bash_library.sh
 functions for other scripts
 
-### asdfinstall
+###### asdfinstall
 Installs asdf programs from `things.yaml` and sets them as global default to the latest
 
-### makebrew.sh
+###### makebrew.sh
 Creates a `brew` readable `Brewfile` from `things.yaml`
 
-### makecode.sh
+###### makecode.sh
 Creates a `codefile` from `things.yaml` for future VSCode use
 
-## MacOS Scripts
+---
 
-### 1password.sh
+### MacOS Scripts
+
+###### 1password.sh
 Setup 1password to be usable by SSH for keys
 
-### dock.sh
+###### dock.sh
 Sets up the dock in the way that is most productive (for me)
 
-### finder.sh
+###### finder.sh
 [Unused] Sets up finder in the way that is most productive (for me)
 
-### generic.sh
+###### generic.sh
 Various other Mac toggles
 
-### mas.sh
+###### mas.sh
 [Unused] Mac App Store installer, if `mas` gets updated to work with Ventura then this will function

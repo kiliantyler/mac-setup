@@ -22,7 +22,7 @@ DOTFILES := $(addprefix $(HOME)/,$(HOMEFILES))
 ifeq "$(OS)" "macos"
 
 ALL:
-	
+
 
 DOTFILES:
 
@@ -81,21 +81,21 @@ CREATE_BREWFILE:
 	makebrew.sh things.yaml || (echo "Error creating Brewfile"; exit 1)
 
 CREATE_CODEFILE:
-	makecode things.yaml || (echo "Error creating Codefile"; exit 1)
+	makecode.sh things.yaml || (echo "Error creating Codefile"; exit 1)
 
 TFENV_SETUP:
 	tfenv install latest; \
 	tfenv use latest
 
-INSTALL_PIPX: | INSTALL_ASDF_PROGRAMS
+INSTALL_PIPX:
 	is-executable pipx || (echo "Installing pipx"; pip install pipx)
 
-INSTALL_PIP_PROGRAMS: PIPPROGRAMS="$(shell yq '.pip.[]' things.yaml)"
 INSTALL_PIP_PROGRAMS: INSTALL_PIPX
-	pipx install "$(PIPPROGRAMS)"
+	PIPPROGRAMS="$(shell yq '.pip.[]' things.yaml)"; \
+	for i in $${PIPPROGRAMS}; do pipx install $$i; done
 
 INSTALL_ASDF_PROGRAMS:
-	asdfinstall things.yaml || (echo "Error installing asdf programs"; exit 1)
+	asdfinstall.sh things.yaml || (echo "Error installing asdf programs"; exit 1)
 
 SETUP_1PASSWORD:
 	macos/1password.sh
