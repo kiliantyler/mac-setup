@@ -37,7 +37,7 @@ if [ ${shorthandSockSymLink} -eq 1 ]; then
   else
     .log -l 5 "Symlink does not match expected target, unlinking"
     unlink "${shortSock}"
-  fi 
+  fi
 else
   if [ ${shorthandSockExists} -eq 1 ]; then
     .log -l 2 "Sock file (${shortSock}) is not a symlink, cannot continue"

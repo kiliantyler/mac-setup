@@ -17,7 +17,7 @@ yq '.asdf.[]' "${yamlfile}" | while read -r program; do
   else
     .log -l 7 "Program does not need to be split"
     executable="${program}"
-  fi 
+  fi
   if ! bin/is-executable "${executable}"; then
     .log -l 5 "${executable} needs to be installed"
     .log -l 6 "asdf plugin add ${program}"

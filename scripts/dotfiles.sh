@@ -14,7 +14,7 @@ for dir in "${dotFolder}"/*; do
     continue
   fi
   .log -l 7 "Working with Dir: ${dir}"
-  find "${dir}" -type f -print0 | 
+  find "${dir}" -type f -print0 |
   while IFS= read -r -d '' file; do
     # shellcheck disable=SC2001
     file=$(echo "$file" | sed "s|${dir}/||")
