@@ -33,3 +33,5 @@ defaults write com.apple.Dock showhidden -bool TRUE
 
 .log -l 6 "Restarting dock to apply changes"
 killall Dock
+
+# dockutil -- setup apps
