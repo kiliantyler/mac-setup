@@ -26,6 +26,7 @@
     - [INSTALL_ASDF_PROGRAMS:](#install_asdf_programs)
     - [SETUP_1PASSWORD:](#setup_1password)
   - [Helper executables](#helper-executables)
+    - [decolor](#decolor)
     - [is-arm64](#is-arm64)
     - [is-executable](#is-executable)
     - [is-file](#is-file)
@@ -108,7 +109,10 @@ Sets up the `agent.sock` symlink for 1Password -- this allows a Unix normal vers
 ---
 
 ### Helper executables
-Located in the `bin` directory, return true (`exit 0`) or false (`exit 1`)
+Located in the `bin` directory, most return true (`exit 0`) or false (`exit 1`)
+
+###### decolor
+Strips color coding from echo statements (used for logging)
 
 ###### is-arm64
 Checks if the mac running the makefile is `ARM64` or not (`intel`)

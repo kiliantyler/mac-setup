@@ -3,3 +3,4 @@ install/Brewfile.lock.json
 .ignore/
 .DS_Store
 test.sh
+logs

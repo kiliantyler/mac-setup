@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+mainDir=${SCRIPT_DIR%/*}
 export PATH="${SCRIPT_DIR}/../bin:${PATH}"
 libName="bash_library.sh"
+scriptName="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
+logDir="${mainDir}/logs"
+mkdir -p "${logDir}" > /dev/null 2>&1
+logFile="${logDir}/${scriptName}.log"
 
 # https://en.wikipedia.org/wiki/Syslog#Severity_level
 LOG_LEVELS=([0]="EMERG " [1]="ALERT " [2]="CRIT  " [3]="ERROR " [4]="WARN  " [5]="NOTICE" [6]="INFO  " [7]="DEBUG ")
@@ -24,40 +29,39 @@ function .log () {
     esac
     shift
   done
-
   # Validate Verbosity is set, if not set to reasonable level
-  if [ -z ${V+x} ]; then V=3; fi
-
+  if [ -z ${V:+x} ]; then V=3; fi
   # Validate input is in correct format
   re='^[0-9]+$'
   if ! [[ ${LEVEL} =~ $re ]] ; then
     local color
     color=$(color "red")
-    echo "[error ] Log level setup incorrectly in input script (This is not an error with bash_library)" >&2; exit 1
+    echo "[error ] Log level setup incorrectly in input script (This is not an error with '${FUNCNAME[0]}' nor '${libName}'" >&2 | tee >(decolor >> "${logFile}"); exit 1
   fi
-
+  local date
+  date=$(date '+%Y-%m-%d %H:%M:%S')
+  local color
+  color=$(color "${LOG_COLORS[$LEVEL]}")
+  local restore='\033[0m'
   # Print with level added
-  # shellcheck disable=SC2086
-  if [ ${V} -ge ${LEVEL} ]; then
-    local date
-    date=$(date '+%Y-%m-%d %H:%M:%S')
-    local color
-    color=$(color ${LOG_COLORS[$LEVEL]})
-    restore='\033[0m'
-    echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}]" "$1"
-    if [ ${NOFAIL} -eq 0 ]; then
-      if [ ${LEVEL} -lt 4 ]; then
-      echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}]" "NOFAIL not set, EXITING"
-        exit 1
-      fi
+  if [ ${V} -ge "${LEVEL}" ]; then
+    echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}]" "$1" | tee >(decolor >> "${logFile}")
+  else
+    echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}]" "$1" | decolor >> "${logFile}"
+  fi
+  if [ ${NOFAIL} -eq 0 ]; then
+    if [ "${LEVEL}" -lt 4 ]; then
+      echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}]" "NOFAIL not set, EXITING" | tee >(decolor >> "${logFile}")
+      exit 1
     fi
   fi
 }
 
 function create_dir() {
-  .log -l 7 "Running 'check_dir' from '${libName}'"
+  .log -l 7 "Running '${FUNCNAME[0]}' from '${libName}'"
+  if [ -z ${1:+x} ]; then .log -l 3 "Argument(s) for '${FUNCNAME[0]}' were not set correctly"; fi
   local dir="${1}"
-  if [ -z ${2+x} ]; then runtime=1; else runtime=${2}; fi
+  if [ -z ${2:+x} ]; then runtime=1; else runtime=${2}; fi
   if [ "${runtime}" -ge 3 ]; then
     .log -l 2 "Attempted twice to create the directory (${dir}) and it has not worked"
   fi
@@ -67,13 +71,14 @@ function create_dir() {
   else
     .log -l 6 "Input directory (${dir}) does not exist, creating"
     mkdir -p "${dir}" > /dev/null 2>&1
-    .log -l 7 "Rerunning check_dir on ${dir}"
-    create_dir "${dir}" $((runtime+1))
+    .log -l 7 "Rerunning '${FUNCNAME[0]}' on ${dir}"
+    ${FUNCNAME[0]} "${dir}" $((runtime+1))
   fi
 }
 
 function check_yaml() {
-  .log -l 7 "Running 'check_yaml' from '${libName}'"
+  .log -l 7 "Running '${FUNCNAME[0]}' from '${libName}'"
+  if [ -z "${1:+x}" ]; then .log -l 3 "Argument(s) for '${FUNCNAME[0]}' were not set correctly"; fi
   local yamlfile="${1}"
   .log -l 7 "YAML File is '${yamlfile}'"
   if is-file "${yamlfile}"; then
@@ -106,17 +111,21 @@ function color() {
   esac
 }
 
+# $1 = File to backup
+# $2 = Backup Location
 function backup_file() {
   .log -l 7 "Running backup_file from '${libName}'"
-  if [ -z ${2+x} ]; then .log -l 3 "Arguments for 'backup_file' were not set correctly"; fi
+  if [ -z ${2+x} ]; then .log -l 3 "Arguments for '${FUNCNAME[0]}' were not set correctly"; fi
   local file="${1}"
   local rootDir="${2}"
   echo " Nothing yet: ${file} ${rootDir}"
 }
 
+# $1 = File to check
+# $2 = Expected path of symlink
 function check_filelink() {
-  .log -l 7 "Running check_filelink from '${libName}'"
-  if [ -z ${2+x} ]; then .log -l 3 "Arguments for 'check_filelink' were not set correctly"; fi
+  .log -l 7 "Running '${FUNCNAME[0]}' from '${libName}'"
+  if [ -z ${2:+x} ]; then .log -l 3 "Arguments for '${FUNCNAME[0]}' were not set correctly"; fi
   local symLinkedFile=${1}
   local expectedPath=${2}
   if ! is-symlink "${symLinkedFile}"; then .log -l 3 "File (${symLinkedFile}) is not a Symlink!"; fi
@@ -130,7 +139,7 @@ function check_filelink() {
     return 1
   fi
 }
-
-.log -l 7 "Successfully sourced bash_library.sh"
-scriptName="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
-.log -l 7 "Running ${scriptName}"
+create_dir "${logDir}"
+# Run some Debug logs on every script that sources
+.log -l 7 "Successfully sourced ${libName}"
+.log -l 7 "Running script: ${scriptName}"
