@@ -28,19 +28,6 @@ repos:
           - id: shellcheck
             args:
                 - -x
-    # - repo: https://github.com/pecigonzalo/pre-commit-shfmt
-    #   rev: v2.1.0
-    #   hooks:
-    #       - id: shell-fmt
-    #         args:
-    #             - -i
-    #             - '2'
-    # - repo: https://github.com/koalaman/shellcheck-precommit
-    #   rev: v0.8.0
-    #   hooks:
-    #       - id: shellcheck
-    #         args:
-    #             - -x
     - repo: https://github.com/pre-commit/mirrors-eslint
       rev: v8.23.0
       hooks:
@@ -61,3 +48,5 @@ repos:
       rev: v0.1.2
       hooks:
           - id: prevent-submodule-regression
+ci:
+    skip: [shfmt, shellcheck]
