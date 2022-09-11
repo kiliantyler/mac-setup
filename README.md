@@ -109,7 +109,7 @@ Sets up the `agent.sock` symlink for 1Password -- this allows a Unix normal vers
 ---
 
 ### Helper executables
-Located in the `bin` directory, most return true (`exit 0`) or false (`exit 1`)
+Located in the `bin` directory, *most* return true (`exit 0`) or false (`exit 1`)
 
 ###### decolor
 Strips color coding from echo statements (used for logging)
