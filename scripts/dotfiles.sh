@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 mainDir=${SCRIPT_DIR%/*}
 # shellcheck source=/dev/null
 source "${mainDir}/scripts/bash_library.sh"
@@ -8,18 +8,18 @@ dotFolder="${HOME}/dotfiles"
 backupDir="${HOME}/.dotfiles_backup"
 
 while [[ $# -gt 1 ]]; do
-  key="$1";
+  key="$1"
   case $key in
-      -s|--source)
-        dotFolder="$2"
-        shift
-      ;;
-      -b|--backup)
-        backupDir="${2}"
-        shift
-      ;;
-      *)
-      ;;
+  -s | --source)
+    dotFolder="$2"
+    shift
+    ;;
+  -b | --backup)
+    backupDir="${2}"
+    shift
+    ;;
+  *) ;;
+
   esac
   shift
 done
@@ -27,7 +27,7 @@ done
 # Strip trailing slash if exists
 # shellcheck disable=SC2001
 dotFolder=$(echo "${dotFolder}" | sed 's:/*$::')
-.log -l 2 "Using '${dotFolder}' as source for dotfiles"
+# .log -l 2 "Using '${dotFolder}' as source for dotfiles"
 
 ignoreFiles=("README.md" ".gitignore")
 
@@ -41,8 +41,9 @@ for dir in "${dotFolder}"/*; do
   .log "Working with Dir: ${dir}"
   # Loop through the files that exist in that folder
   # Backup + Delete any files that exist
-  find "${dir}" -type f -print0 |
-  while IFS= read -r -d '' file; do
+  # find_files runs in a Subshell -- Cannot exit from main process if anything goes wrong
+
+  for file in $(find_files "${dir}"); do
     .log "------------------"
     # shellcheck disable=SC2001
     file=$(echo "${file}" | sed "s|${dir}/||")
@@ -68,6 +69,7 @@ for dir in "${dotFolder}"/*; do
         else
           .log -l 3 "Link is set incorrectly"
           # TODO: link is set incorrectly
+          # Set a linked file in the backup folder to the existing link
         fi
       else
         .log -l 4 "File (${homeFile}) is NOT a symlink"
@@ -83,9 +85,6 @@ for dir in "${dotFolder}"/*; do
       .log -l 5 "File ($homeFile) does not exist"
     fi
   done
-  # This fixes if there is an `exit >0` anywhere in the loop that it breaks immediately
-  # shellcheck disable=2181
-  if [ $? -ne 0 ]; then exit 1; fi
   # Finally run `stow` on that directory once we know all files are removed properly
   stow_folder "${dir}"
 done
