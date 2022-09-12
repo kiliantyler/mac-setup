@@ -1,0 +1,13 @@
+[user]
+	email = example@consoto.com
+	name = Joe Blow
+	signingKey = 1087140CAFEBABE00097098980
+[commit]
+	gpgSign = true
+[tag]
+	forceSignAnnotated = true
+[credential]
+  helper = store
+[init]
+  defaultBranch = main
+  templateDir = /Users/joe/.git-template
