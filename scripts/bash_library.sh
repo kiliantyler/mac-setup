@@ -256,7 +256,11 @@ function stow_folder() {
   if [ -n "${2:+x}" ]; then stowDir=${2}; fi
   .log "Stowing files in '${stowDir}'"
   if ! is-folder "${dir}"; then .log -2 "'${dir}' is NOT a directory!"; fi
-  # if stow -d "${1}" -t "${stowDir}"
+  if stow -d "${dir}" -t "${stowDir}" >/dev/null 2>&1; then
+    .log -l 6 "'${dir}' has been stowed successfully in '${stowDir}'"
+  else
+    .log -l 2 "'${dir}' unable to be stowed in '${stowDir}'"
+  fi
 }
 
 # Runs when file is sourced
