@@ -15,6 +15,7 @@ else
 BREW=/usr/local/bin/brew
 BREW_CMD=brew
 endif
+TF_VER = latest
 
 # This allows an import of an extending Makefile in your Dotfiles directory
 -include $(DOTFILES_DIR)/Makefile
@@ -27,7 +28,7 @@ ifeq "$(OS)" "macos"
 ALL:
 	# Eventually everything will be listed here
 
-DOTFILES:
+DOTFILES: INSTALL_STOW
 	dotfiles.sh || (echo "Error with dotfiles.sh"; exit 1)
 
 ADD_SUDO: SUDOERS_FILE=/private/etc/sudoers.d/$(USER)
@@ -49,7 +50,7 @@ INSTALL_STOW: POST_INSTALL_HOMEBREW
 INSTALL_OHMYZSH:
 	is-folder ~/.oh-my-zsh || (echo 'Installing Oh-my-zsh'; sh -c "$$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)")
 
-INSTALL_OMZSH_THEMES:
+INSTALL_OMZSH_THEMES: INSTALL_YQ
 	THEMES="$(shell yq '.zsh.oh-my-zsh.themes | to_entries | .[] | (.key + "|" +.value)' $(INSTALL_PATH))"; \
 	for theme in $${THEMES}; do \
 	folder="$$(echo $$theme | cut -f1 -d'|')"; \
@@ -63,7 +64,7 @@ INSTALL_OMZSH_THEMES:
 	fi \
 	done # TODO: move this to a script
 
-INSTALL_OMZSH_PLUGINS:
+INSTALL_OMZSH_PLUGINS: INSTALL_YQ
 	PLUGINS="$(shell yq '.zsh.oh-my-zsh.plugins | to_entries | .[] | (.key + "|" +.value)' $(INSTALL_PATH))"; \
 	for plugin in $${PLUGINS}; do \
 	folder="$$(echo $$plugin | cut -f1 -d'|')"; \
@@ -77,27 +78,27 @@ INSTALL_OMZSH_PLUGINS:
 	fi \
 	done # TODO: move this to a script
 
-INSTALL_FORMULAS: INSTALL_HOMEBREW CREATE_BREWFILE
+INSTALL_FORMULAS: INSTALL_HOMEBREW CREATE_BREWFILE INSTALL_YQ
 	brew bundle --file=$(SETUP_DIR)/install/Brewfile || true
 
-CREATE_BREWFILE:
+CREATE_BREWFILE: INSTALL_YQ
 	makebrew.sh $(INSTALL_PATH) || (echo "Error creating Brewfile"; exit 1)
 
-CREATE_CODEFILE:
+CREATE_CODEFILE: INSTALL_YQ
 	makecode.sh $(INSTALL_PATH) || (echo "Error creating Codefile"; exit 1)
 
 TFENV_SETUP:
-	tfenv install latest; \
-	tfenv use latest
+	tfenv install $(TF_VER); \
+	tfenv use $(TF_VER)
 
 INSTALL_PIPX:
 	is-executable pipx || (echo "Installing pipx"; pip install pipx)
 
-INSTALL_PIP_PROGRAMS: INSTALL_PIPX
+INSTALL_PIP_PROGRAMS: INSTALL_PIPX INSTALL_YQ
 	PIPPROGRAMS="$(shell yq '.pip.[]' $(INSTALL_PATH))"; \
 	for i in $${PIPPROGRAMS}; do pipx install $$i; done
 
-INSTALL_ASDF_PROGRAMS:
+INSTALL_ASDF_PROGRAMS: INSTALL_YQ
 	asdfinstall.sh $(INSTALL_PATH) || (echo "Error installing asdf programs"; exit 1)
 
 SETUP_1PASSWORD:
