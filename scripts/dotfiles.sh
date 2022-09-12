@@ -85,5 +85,4 @@ for dir in "${dotFolder}"/*; do
   done
   # Finally run `stow` on that directory once we know all files are removed properly
   stow_folder "${dotFolder}" "${internalDir}"
-  .log -l 1 "Halting for inspection"
 done
