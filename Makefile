@@ -1,8 +1,10 @@
 OS := $(shell bin/is-supported bin/is-macos macos)
-DOTFILES_DIR := $(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+SETUP_DIR := $(shell dirname $(realpath $(MAKEFILE_LIST)))
 HOMEBREW_PREFIX := $(shell bin/is-supported bin/is-arm64 /opt/homebrew /usr/local)
-export PATH := /usr/local/bin:$(HOME)/.asdf/shims:$(HOMEBREW_PREFIX)/bin:$(DOTFILES_DIR)/bin:$(DOTFILES_DIR)/scripts:$(DOTFILES_DIR)/macos:$(PATH)
-export STOW_DIR = $(DOTFILES_DIR)
+DOTFILES_DIR := $(HOME)/dotfiles
+INSTALL_FILE = installs.yaml
+INSTALL_PATH = $(DOTFILES_DIR)/$(INSTALL_FILE)
+export PATH := /usr/local/bin:$(HOME)/.asdf/shims:$(HOMEBREW_PREFIX)/bin:$(SETUP_DIR)/bin:$(SETUP_DIR)/scripts:$(SETUP_DIR)/macos:$(PATH)
 export ACCEPT_EULA=Y
 USER := $(shell whoami)
 IS_M1 := $(shell bin/is-supported bin/is-arm64 true false)
@@ -17,13 +19,11 @@ endif
 
 .PHONY: TEST DOTFILES
 
+# We only support macs for now (Linux in the future?)
 ifeq "$(OS)" "macos"
 
-TEST:
-	test.sh || (echo "Error running test.sh"; exit 1)
-
 ALL:
-
+	# Eventually everything will be listed here
 
 DOTFILES:
 	dotfiles.sh || (echo "Error with dotfiles.sh"; exit 1)
@@ -48,7 +48,7 @@ INSTALL_OHMYZSH:
 	is-folder ~/.oh-my-zsh || (echo 'Installing Oh-my-zsh'; sh -c "$$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)")
 
 INSTALL_OMZSH_THEMES:
-	THEMES="$(shell yq '.zsh.oh-my-zsh.themes | to_entries | .[] | (.key + "|" +.value)' things.yaml)"; \
+	THEMES="$(shell yq '.zsh.oh-my-zsh.themes | to_entries | .[] | (.key + "|" +.value)' $(INSTALL_PATH))"; \
 	for theme in $${THEMES}; do \
 	folder="$$(echo $$theme | cut -f1 -d'|')"; \
 	gitrepo="$$(echo $$theme | cut -f2 -d'|')"; \
@@ -62,7 +62,7 @@ INSTALL_OMZSH_THEMES:
 	done # TODO: move this to a script
 
 INSTALL_OMZSH_PLUGINS:
-	PLUGINS="$(shell yq '.zsh.oh-my-zsh.plugins | to_entries | .[] | (.key + "|" +.value)' things.yaml)"; \
+	PLUGINS="$(shell yq '.zsh.oh-my-zsh.plugins | to_entries | .[] | (.key + "|" +.value)' $(INSTALL_PATH))"; \
 	for plugin in $${PLUGINS}; do \
 	folder="$$(echo $$plugin | cut -f1 -d'|')"; \
 	gitrepo="$$(echo $$plugin | cut -f2 -d'|')"; \
@@ -76,13 +76,13 @@ INSTALL_OMZSH_PLUGINS:
 	done # TODO: move this to a script
 
 INSTALL_FORMULAS: INSTALL_HOMEBREW CREATE_BREWFILE
-	brew bundle --file=$(DOTFILES_DIR)/install/Brewfile || true
+	brew bundle --file=$(SETUP_DIR)/install/Brewfile || true
 
 CREATE_BREWFILE:
-	makebrew.sh things.yaml || (echo "Error creating Brewfile"; exit 1)
+	makebrew.sh $(INSTALL_PATH) || (echo "Error creating Brewfile"; exit 1)
 
 CREATE_CODEFILE:
-	makecode.sh things.yaml || (echo "Error creating Codefile"; exit 1)
+	makecode.sh $(INSTALL_PATH) || (echo "Error creating Codefile"; exit 1)
 
 TFENV_SETUP:
 	tfenv install latest; \
@@ -92,11 +92,11 @@ INSTALL_PIPX:
 	is-executable pipx || (echo "Installing pipx"; pip install pipx)
 
 INSTALL_PIP_PROGRAMS: INSTALL_PIPX
-	PIPPROGRAMS="$(shell yq '.pip.[]' things.yaml)"; \
+	PIPPROGRAMS="$(shell yq '.pip.[]' $(INSTALL_PATH))"; \
 	for i in $${PIPPROGRAMS}; do pipx install $$i; done
 
 INSTALL_ASDF_PROGRAMS:
-	asdfinstall.sh things.yaml || (echo "Error installing asdf programs"; exit 1)
+	asdfinstall.sh $(INSTALL_PATH) || (echo "Error installing asdf programs"; exit 1)
 
 SETUP_1PASSWORD:
 	macos/1password.sh
