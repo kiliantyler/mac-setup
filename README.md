@@ -66,7 +66,8 @@
 ### Makefile
 
 ###### DOTFILES:
-Copies config files from the `dotfiles` directory into their respective locations. This is a separate repo to allow others to use this easily
+Copies config files from the `dotfiles` directory into their respective locations. This is a separate repo to allow others to use this easily.
+Note: This will skip folders beginning with a `.`
 
 ###### ADD_SUDO:
 Adds yourself as a sudoer with NOPASSWD enabled

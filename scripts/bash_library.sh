@@ -42,7 +42,7 @@ function .log() {
   # Validate ${Level} is in correct format (INT 0-9)
   if ! is-int "${LEVEL}"; then
     local errorText="Log level setup incorrectly from input '${FUNCNAME[1]}' (This is not an error with '${FUNCNAME[0]}' nor '${libName}')"
-    .log -l 2 -n "${errorText}"
+    .log -l 2 "${errorText}"
   fi
   local failed=0
   if [ "${LEVEL}" -le 2 ]; then
