@@ -28,6 +28,7 @@ done
 # shellcheck disable=SC2001
 dotFolder=$(echo "${dotFolder}" | sed 's:/*$::')
 ignoreFiles=("README.md" ".gitignore")
+noStowList=("dotfiles_extention" ".ignore")
 
 .log "Looping through folders in ${dotFolder}"
 for dir in "${dotFolder}"/*; do
@@ -37,10 +38,13 @@ for dir in "${dotFolder}"/*; do
     continue
   fi
   .log "Working with Dir: ${dir}"
+  if [[ "${noStowList[*]}" =~ $(basename "${dir}") ]]; then
+    .log -l 6 "Skipping '${dir}' since it's on the noStowList"
+    continue
+  fi
   # Loop through the files that exist in that folder
   # Backup + Delete any files that exist
   # find_files runs in a Subshell -- Cannot exit from main process if anything goes wrong
-
   for file in $(find_files "${dir}"); do
     .log "------------------"
     # shellcheck disable=SC2001
@@ -52,6 +56,7 @@ for dir in "${dotFolder}"/*; do
     fileDir=$(dirname "${file}")
     if [[ "${ignoreFiles[*]}" =~ ${file} ]]; then
       .log -l 6 "Skipping $file since it's in 'ignoreFiles' list"
+      continue
     fi
     homeFile="${HOME}/${file}"
     .log "Looking for ${homeFile}"

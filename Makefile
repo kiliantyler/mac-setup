@@ -16,6 +16,8 @@ BREW=/usr/local/bin/brew
 BREW_CMD=brew
 endif
 
+# This allows an import of an extending Makefile in your Dotfiles directory
+-include $(DOTFILES_DIR)/Makefile
 
 .PHONY: TEST DOTFILES
 
