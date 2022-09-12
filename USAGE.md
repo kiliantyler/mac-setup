@@ -25,6 +25,9 @@ dotfiles
             └── pre-commit
 ```
 
+### installs.yaml
+Example here: [installs.yaml](https://github.com/kiliantyler/mac-setup/blob/main/dotfiles_example/installs.yaml)
+
 ### Example commands
 ```
 # This reads from `${HOME}/dotfiles/installs.yaml` 'brew' section
