@@ -143,7 +143,7 @@ function copy_file() {
   local filePreCopy="${1}"
   local filePostCopy="${2}"
   .log -l 6 "Copying '${filePreCopy}' -> '${filePostCopy}'"
-  if cp "${filePreCopy}" "${filePostCopy}" >/dev/null 2>&1; then
+  if cp -a "${filePreCopy}" "${filePostCopy}" >/dev/null 2>&1; then
     if check_file "${filePostCopy}"; then
       .log "${filePostCopy} copied successfully"
     fi
@@ -246,20 +246,22 @@ function find_files() {
   find "${dir}" -type f -print0
 }
 
-# $1 = directory to stow
-# OPTIONAL: $2 = directory to stow INTO (default: ${HOME})
+# $1 = source directory
+# $2 = package to stow
+# OPTIONAL: $3 = directory to stow INTO (default: ${HOME})
 function stow_folder() {
   init_func "${1}"
   local dir="${1}"
+  local package="${2}"
   .log "Looking to 'stow' directory '${dir}'"
   local stowDir="${HOME}"
-  if [ -n "${2:+x}" ]; then stowDir=${2}; fi
+  if [ -n "${3:+x}" ]; then stowDir=${3}; fi
   .log "Stowing files in '${stowDir}'"
   if ! is-folder "${dir}"; then .log -2 "'${dir}' is NOT a directory!"; fi
-  if stow -d "${dir}" -t "${stowDir}" >/dev/null 2>&1; then
-    .log -l 6 "'${dir}' has been stowed successfully in '${stowDir}'"
+  if stow -d "${dir}" -t "${stowDir}" "${package}"; then
+    .log -l 6 "'${dir}/${package}' has been stowed successfully in '${stowDir}'"
   else
-    .log -l 2 "'${dir}' unable to be stowed in '${stowDir}'"
+    .log -l 2 "'${dir}/${package}' unable to be stowed in '${stowDir}'"
   fi
 }
 

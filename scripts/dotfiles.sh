@@ -57,7 +57,7 @@ for dir in "${dotFolder}"/*; do
     .log "Looking for ${homeFile}"
     if [ -f "${homeFile}" ]; then
       .log -l 5 "File (${homeFile}) exists already"
-      expectedPath="${mainDir}/${dir}/${file}"
+      expectedPath="${dir}/${file}"
       if [ -L "${homeFile}" ]; then
         .log -l 5 "File (${homeFile}) is already a symlink"
         .log "Discovering if ${homeFile} links to ${expectedPath}"
@@ -65,9 +65,9 @@ for dir in "${dotFolder}"/*; do
           .log -l 6 "${homeFile} points to expected path (${expectedPath}) -- Nothing to do"
           continue
         else
-          .log -l 3 "Link is set incorrectly"
-          # TODO: link is set incorrectly
-          # Set a linked file in the backup folder to the existing link
+          .log -l 5 "Link is set incorrectly, backing up and deleting"
+          backup_file -d "${backupDir}/${internalDir}/${fileDir}" "${homeFile}"
+          delete_file "${homeFile}"
         fi
       else
         .log -l 4 "File (${homeFile}) is NOT a symlink"
@@ -80,9 +80,10 @@ for dir in "${dotFolder}"/*; do
         delete_file "${homeFile}"
       fi
     else
-      .log -l 5 "File ($homeFile) does not exist"
+      .log -l 6 "File ($homeFile) does not exist yet"
     fi
   done
   # Finally run `stow` on that directory once we know all files are removed properly
-  stow_folder "${dir}"
+  stow_folder "${dotFolder}" "${internalDir}"
+  .log -l 1 "Halting for inspection"
 done
