@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 re='^[0-9]+$'
-if [[ ${1} =~ $re ]] ; then
+if [[ ${1} =~ $re ]]; then
   exit 0
 else
   exit 1

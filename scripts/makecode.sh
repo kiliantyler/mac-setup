@@ -4,10 +4,10 @@ yamlfile=$1
 extensions=$(yq '.code.extensions.[]' "$yamlfile")
 codefile=install/Codefile
 
-echo -n "" > ${codefile}
+echo -n "" >${codefile}
 
 for extension in ${extensions}; do
-  echo "${extension}" >> ${codefile}
+  echo "${extension}" >>${codefile}
 done
 
 exit 0

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # shellcheck source=/dev/null
 source "${SCRIPT_DIR}/../scripts/bash_library.sh"
 
@@ -11,7 +11,7 @@ create_dir "${onepassFolder}"
 
 shorthandSockExists=0
 shorthandSockSymLink=0
-if [ -a  "${shortSock}" ]; then
+if [ -a "${shortSock}" ]; then
   shorthandSockExists=1
   .log "${shortSock} exists, continuing"
   if is-symlink "${shortSock}"; then
@@ -20,7 +20,7 @@ if [ -a  "${shortSock}" ]; then
   fi
 fi
 
-if [ -a  "${agentSock}" ]; then
+if [ -a "${agentSock}" ]; then
   .log "${agentSock} exists, continuing"
 else
   .log -l 2 "Original 1password agent.sock (${agentSock}) does not exist, cannot continue"
@@ -41,7 +41,7 @@ else
   fi
 fi
 
-unlink "${shortSock}" > /dev/null 2>&1
+unlink "${shortSock}" >/dev/null 2>&1
 .log -l 5 "Creating symlink from ${shortSock} to ${agentSock}"
 ln -s "${agentSock}" "${shortSock}"
 exit 0
