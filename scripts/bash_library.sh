@@ -13,7 +13,7 @@ logFile="${logDir}/${scriptName}.log"
 LOG_LEVELS=([0]="EMERG " [1]="ALERT " [2]="CRIT  " [3]="ERROR " [4]="WARN  " [5]="NOTICE" [6]="INFO  " [7]="DEBUG ")
 LOG_COLORS=([0]="red" [1]="red" [2]="red" [3]="lred" [4]="yellow" [5]="cyan" [6]="green" [7]="lgrey")
 
-## Input Params
+# Input Params
 # OPTIONAL: -l|--level = Level of Log from ${LOG_LEVELS} (default: '7' [DEBUG])
 # OPTIONAL: -n|--no-exit = Do not fail even when above the CRIT (2) threshold (default: false)
 # $@ = Log text to output
@@ -62,7 +62,7 @@ function .log() {
   if is-true ${failed}; then exit 1; fi
 }
 
-## $1 = Level of log (used to determine color)
+# $1 = Level of log (used to determine color)
 # $2 = Subshell Number
 # $3 = Message
 function log_format() {
@@ -80,7 +80,7 @@ function log_format() {
   echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}]${subshellText}(${FUNCNAME[2]}): ${message}"
 }
 
-## This must be second, the rest of the functions use it
+# This must be second, the rest of the functions use it
 # Input the *Last* needed argument from a function
 # example: `init_func "${1}"` or `initFunc "${2}"` depending on arguments needed
 function init_func() {
@@ -89,7 +89,7 @@ function init_func() {
   .log "Arguments for '${FUNCNAME[1]}' seemingly set correctly"
 }
 
-## $1 = directory to create
+# $1 = directory to create
 # OPTIONAL/INTERNAL $2 = Runtime attempts (default '1')
 function create_dir() {
   init_func "${1}"
@@ -109,7 +109,7 @@ function create_dir() {
   fi
 }
 
-## $1 = file to check
+# $1 = file to check
 function check_file() {
   init_func "${1}"
   local file="${1}"
@@ -122,7 +122,7 @@ function check_file() {
   fi
 }
 
-## $1 = file to be deleted
+# $1 = file to be deleted
 function delete_file() {
   init_func "${1}"
   local file="${1}"
@@ -136,7 +136,7 @@ function delete_file() {
   fi
 }
 
-## $1 = file to copy (whole path)
+# $1 = file to copy (whole path)
 # $2 = file copy destination (whole path)
 function copy_file() {
   init_func "${2}"
@@ -152,7 +152,7 @@ function copy_file() {
   fi
 }
 
-## $1 = file to roll to an older backup
+# $1 = file to roll to an older backup
 # $2 = copies to keep
 # $3 = times run
 function roll_file() {
@@ -184,7 +184,7 @@ function roll_file() {
   return 0
 }
 
-## $1 = File to backup
+# $1 = File to backup
 # Input Params
 # OPTIONAL: --dir = Backup directory (default '${libraryBackupDir}')
 # OPTIONAL: --count = Copies to keep (default '5')
@@ -220,7 +220,7 @@ function backup_file() {
   copy_file "${file}" "${backupFile}"
 }
 
-## $1 = File to check
+# $1 = File to check
 # $2 = Expected path of symlink
 function check_filelink() {
   init_func "${2}"
@@ -246,7 +246,7 @@ function find_files() {
   find "${dir}" -type f -print0
 }
 
-## $1 = directory to stow
+# $1 = directory to stow
 # OPTIONAL: $2 = directory to stow INTO (default: ${HOME})
 function stow_folder() {
   init_func "${1}"
@@ -259,7 +259,7 @@ function stow_folder() {
   # if stow -d "${1}" -t "${stowDir}"
 }
 
-## Runs when file is sourced
+# Runs when file is sourced
 function source_file() {
   # Just to verify the log directory exists, fails if it cannot create
   create_dir "${logDir}"

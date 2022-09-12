@@ -27,8 +27,6 @@ done
 # Strip trailing slash if exists
 # shellcheck disable=SC2001
 dotFolder=$(echo "${dotFolder}" | sed 's:/*$::')
-# .log -l 2 "Using '${dotFolder}' as source for dotfiles"
-
 ignoreFiles=("README.md" ".gitignore")
 
 .log "Looping through folders in ${dotFolder}"
@@ -79,7 +77,7 @@ for dir in "${dotFolder}"/*; do
           .log -l 6 "'${homeFile}' and '${expectedPath}' are different, backing up original"
           backup_file -d "${backupDir}/${internalDir}/${fileDir}" "${homeFile}"
         fi
-        # delete_file "${homeFile}"
+        delete_file "${homeFile}"
       fi
     else
       .log -l 5 "File ($homeFile) does not exist"
