@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 mainDir=${SCRIPT_DIR%/*}
 # shellcheck source=/dev/null
 source "${mainDir}/scripts/bash_library.sh"
@@ -8,18 +8,18 @@ dotFolder="${HOME}/dotfiles"
 backupDir="${HOME}/.dotfiles_backup"
 
 while [[ $# -gt 1 ]]; do
-  key="$1";
+  key="$1"
   case $key in
-      -s|--source)
-        dotFolder="$2"
-        shift
-      ;;
-      -b|--backup)
-        backupDir="${2}"
-        shift
-      ;;
-      *)
-      ;;
+  -s | --source)
+    dotFolder="$2"
+    shift
+    ;;
+  -b | --backup)
+    backupDir="${2}"
+    shift
+    ;;
+  *) ;;
+
   esac
   shift
 done
@@ -27,8 +27,6 @@ done
 # Strip trailing slash if exists
 # shellcheck disable=SC2001
 dotFolder=$(echo "${dotFolder}" | sed 's:/*$::')
-.log -l 2 "Using '${dotFolder}' as source for dotfiles"
-
 ignoreFiles=("README.md" ".gitignore")
 
 .log "Looping through folders in ${dotFolder}"
@@ -41,8 +39,9 @@ for dir in "${dotFolder}"/*; do
   .log "Working with Dir: ${dir}"
   # Loop through the files that exist in that folder
   # Backup + Delete any files that exist
-  find "${dir}" -type f -print0 |
-  while IFS= read -r -d '' file; do
+  # find_files runs in a Subshell -- Cannot exit from main process if anything goes wrong
+
+  for file in $(find_files "${dir}"); do
     .log "------------------"
     # shellcheck disable=SC2001
     file=$(echo "${file}" | sed "s|${dir}/||")
@@ -58,7 +57,7 @@ for dir in "${dotFolder}"/*; do
     .log "Looking for ${homeFile}"
     if [ -f "${homeFile}" ]; then
       .log -l 5 "File (${homeFile}) exists already"
-      expectedPath="${mainDir}/${dir}/${file}"
+      expectedPath="${dir}/${file}"
       if [ -L "${homeFile}" ]; then
         .log -l 5 "File (${homeFile}) is already a symlink"
         .log "Discovering if ${homeFile} links to ${expectedPath}"
@@ -66,8 +65,9 @@ for dir in "${dotFolder}"/*; do
           .log -l 6 "${homeFile} points to expected path (${expectedPath}) -- Nothing to do"
           continue
         else
-          .log -l 3 "Link is set incorrectly"
-          # TODO: link is set incorrectly
+          .log -l 5 "Link is set incorrectly, backing up and deleting"
+          backup_file -d "${backupDir}/${internalDir}/${fileDir}" "${homeFile}"
+          delete_file "${homeFile}"
         fi
       else
         .log -l 4 "File (${homeFile}) is NOT a symlink"
@@ -77,15 +77,13 @@ for dir in "${dotFolder}"/*; do
           .log -l 6 "'${homeFile}' and '${expectedPath}' are different, backing up original"
           backup_file -d "${backupDir}/${internalDir}/${fileDir}" "${homeFile}"
         fi
-        # delete_file "${homeFile}"
+        delete_file "${homeFile}"
       fi
     else
-      .log -l 5 "File ($homeFile) does not exist"
+      .log -l 6 "File ($homeFile) does not exist yet"
     fi
   done
-  # This fixes if there is an `exit >0` anywhere in the loop that it breaks immediately
-  # shellcheck disable=2181
-  if [ $? -ne 0 ]; then exit 1; fi
   # Finally run `stow` on that directory once we know all files are removed properly
-  stow_folder "${dir}"
+  stow_folder "${dotFolder}" "${internalDir}"
+  .log -l 1 "Halting for inspection"
 done

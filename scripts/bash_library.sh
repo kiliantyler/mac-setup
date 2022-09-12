@@ -1,69 +1,83 @@
 #!/usr/bin/env bash
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 mainDir=${SCRIPT_DIR%/*}
 export PATH="${SCRIPT_DIR}/../bin:${PATH}"
 libName="bash_library.sh"
 scriptName="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
 logDir="${mainDir}/logs"
 libraryBackupDir="${mainDir}/backup"
-mkdir -p "${logDir}" > /dev/null 2>&1
+mkdir -p "${logDir}" >/dev/null 2>&1
 logFile="${logDir}/${scriptName}.log"
 
 # https://en.wikipedia.org/wiki/Syslog#Severity_level
 LOG_LEVELS=([0]="EMERG " [1]="ALERT " [2]="CRIT  " [3]="ERROR " [4]="WARN  " [5]="NOTICE" [6]="INFO  " [7]="DEBUG ")
-LOG_COLORS=([0]="red"    [1]="red"    [2]="red"    [3]="lred"    [4]="yellow" [5]="cyan"  [6]="green"  [7]="lgrey")
+LOG_COLORS=([0]="red" [1]="red" [2]="red" [3]="lred" [4]="yellow" [5]="cyan" [6]="green" [7]="lgrey")
 
-# This must be first, every other function uses it
 # Input Params
-# OPTIONAL: --level = Level of Log from ${LOG_LEVELS} (default: '7' [DEBUG])
-# --no-exit = Do not fail even when above the CRIT (2) threshold (default: false)
+# OPTIONAL: -l|--level = Level of Log from ${LOG_LEVELS} (default: '7' [DEBUG])
+# OPTIONAL: -n|--no-exit = Do not fail even when above the CRIT (2) threshold (default: false)
 # $@ = Log text to output
-function .log () {
+function .log() {
   # All locals so that variables are always reset
   local NOFAIL=0
   local LEVEL=7
-  local color
+  local subshellNum
+  subshellNum="${BASH_SUBSHELL}"
   while [[ $# -gt 1 ]]; do
-    local key="$1";
+    local key="$1"
     case $key in
-        -l|--level)
-            LEVEL="$2"
-            shift
-        ;;
-        -n|--no-exit)
-            NOFAIL=1
-        ;;
-        *)
-        ;;
+    -l | --level)
+      LEVEL="$2"
+      shift
+      ;;
+    -n | --no-exit) NOFAIL=1 ;;
+    *) ;;
     esac
     shift
   done
-  # Validate Verbosity is set, if not set to reasonable level Error (3)
+  local message="${1}"
+  local failMessage=" | NOFAIL not set, EXITING"
+  # Validate Verbosity is set, if not set to reasonable level: Error (3)
   if [ -z ${V:+x} ]; then V=3; fi
   # Validate ${Level} is in correct format (INT 0-9)
+  if ! is-int "${LEVEL}"; then
+    local errorText="Log level setup incorrectly from input '${FUNCNAME[1]}' (This is not an error with '${FUNCNAME[0]}' nor '${libName}')"
+    .log -l 2 -n "${errorText}"
+  fi
+  local failed=0
+  if [ "${LEVEL}" -le 2 ]; then
+    if [ ${NOFAIL} -eq 0 ]; then
+      message="${message}${failMessage}"
+      failed=1
+    fi
+  fi
+  logMessage="$(log_format "${LEVEL}" ""${subshellNum} "${message}")"
+  if [ ${V} -ge "${LEVEL}" ]; then
+    # By sending this to /dev/tty we can use .log in functions that return text (like find_files)
+    echo -e "${logMessage}" | tee >(decolor >>"${logFile}") >/dev/tty
+  else
+    # ALWAYS log the output (Maybe this should have debug logging disabled by default? only log it if V=7?)
+    echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}](${FUNCNAME[1]}): $1" | decolor >>"${logFile}"
+  fi
+  if is-true ${failed}; then exit 1; fi
+}
+
+# $1 = Level of log (used to determine color)
+# $2 = Subshell Number
+# $3 = Message
+function log_format() {
+  local LEVEL="${1}"
+  local subshellNum="${2}"
+  local message="${3}"
+  local color
   local date
   date=$(date '+%Y-%m-%d %H:%M:%S')
   local restore
   restore=$(color "restore")
-  if ! is-int "${LEVEL}"; then
-    local errorText="Log level setup incorrectly from input '${FUNCNAME[1]}' (This is not an error with '${FUNCNAME[0]}' nor '${libName}')"
-    .log -l 2 "${errorText}"
-  fi
+  local subshellText=""
+  if [ "${subshellNum}" -gt 0 ]; then color=$(color red) subshellText="{${color}SUBSHELL: ${subshellNum}${restore}}"; fi
   color=$(color "${LOG_COLORS[$LEVEL]}")
-  # Print with level added
-  if [ ${V} -ge "${LEVEL}" ]; then
-    echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}](${FUNCNAME[1]}): $1" | tee >(decolor >> "${logFile}")
-  else
-    # ALWAYS log the output
-    echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}](${FUNCNAME[1]}): $1" | decolor >> "${logFile}"
-  fi
-  if [ ${NOFAIL} -eq 0 ]; then
-    if [ "${LEVEL}" -lt 3 ]; then
-      # If NOFAIL is not set, fail at CRITICAL (2) or higher
-      echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}](${FUNCNAME[1]}): NOFAIL not set, EXITING" | tee >(decolor >> "${logFile}")
-      exit 1
-    fi
-  fi
+  echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}]${subshellText}(${FUNCNAME[2]}): ${message}"
 }
 
 # This must be second, the rest of the functions use it
@@ -89,9 +103,9 @@ function create_dir() {
     .log -l 6 "Input directory (${dir}) exists"
   else
     .log -l 6 "Input directory (${dir}) does not exist, creating"
-    mkdir -p "${dir}" > /dev/null 2>&1
+    mkdir -p "${dir}" >/dev/null 2>&1
     .log "Rerunning '${FUNCNAME[0]}' on ${dir}"
-    ${FUNCNAME[0]} "${dir}" $((runtime+1))
+    ${FUNCNAME[0]} "${dir}" $((runtime + 1))
   fi
 }
 
@@ -129,7 +143,7 @@ function copy_file() {
   local filePreCopy="${1}"
   local filePostCopy="${2}"
   .log -l 6 "Copying '${filePreCopy}' -> '${filePostCopy}'"
-  if cp "${filePreCopy}" "${filePostCopy}" > /dev/null 2>&1; then
+  if cp -a "${filePreCopy}" "${filePostCopy}" >/dev/null 2>&1; then
     if check_file "${filePostCopy}"; then
       .log "${filePostCopy} copied successfully"
     fi
@@ -149,17 +163,20 @@ function roll_file() {
   local file="${orgFile}"
   if ! is-int "${copiesToKeep}"; then .log -l 2 "'copiesToKeep' not an INT"; fi
   if ! is-int "${runTimes}"; then .log -l 2 "'runTimes' not an INT"; fi
-  if [ "${runTimes}" -gt 1 ]; then file="${orgFile}.$((runTimes-1))"; fi
-  if ! is-file "${file}"; then .log "File (${file}) not found, no roll needed"; return 0; fi
+  if [ "${runTimes}" -gt 1 ]; then file="${orgFile}.$((runTimes - 1))"; fi
+  if ! is-file "${file}"; then
+    .log "File (${file}) not found, no roll needed"
+    return 0
+  fi
   .log -l 6 "File found '${file}"
   if [ "${runTimes}" -lt "${copiesToKeep}" ]; then
-    if ${FUNCNAME[0]} "${orgFile}" "${copiesToKeep}" "$((runTimes+1))"; then
+    if ${FUNCNAME[0]} "${orgFile}" "${copiesToKeep}" "$((runTimes + 1))"; then
       .log "${file} is ready to be rolled"
       copy_file "${file}" "${orgFile}.$((runTimes))"
       delete_file "${file}"
       return 0
     else
-      .log -l 2 "'${FUNCNAME[0]} ${orgFile} ${copiesToKeep} $((runTimes+1))' FAILED"
+      .log -l 2 "'${FUNCNAME[0]} ${orgFile} ${copiesToKeep} $((runTimes + 1))' FAILED"
     fi
   fi
   .log "${file} needs to be deleted since it is the maximum backup number"
@@ -175,17 +192,17 @@ function backup_file() {
   local count=5
   local backupDir=${libraryBackupDir}
   while [[ $# -gt 1 ]]; do
-    local key="$1";
+    local key="$1"
     case $key in
-        -c|--count)
-            count="${2}"
-            shift
-        ;;
-        -d|--dir)
-            backupDir="${2}"
-        ;;
-        *)
-        ;;
+    -c | --count)
+      count="${2}"
+      shift
+      ;;
+    -d | --dir)
+      backupDir="${2}"
+      ;;
+    *) ;;
+
     esac
     shift
   done
@@ -221,21 +238,40 @@ function check_filelink() {
   fi
 }
 
-# $1 = directory to stow
-# OPTIONAL: $2 = directory to stow INTO (default: ${HOME})
+# $1 = input directory to search
+function find_files() {
+  init_func "${1}"
+  local dir="${1}"
+  .log "Searching '${dir}'"
+  find "${dir}" -type f -print0
+}
+
+# $1 = source directory
+# $2 = package to stow
+# OPTIONAL: $3 = directory to stow INTO (default: ${HOME})
 function stow_folder() {
   init_func "${1}"
   local dir="${1}"
+  local package="${2}"
   .log "Looking to 'stow' directory '${dir}'"
   local stowDir="${HOME}"
-  if [ -n "${2:+x}" ]; then stowDir=${2}; fi
+  if [ -n "${3:+x}" ]; then stowDir=${3}; fi
   .log "Stowing files in '${stowDir}'"
   if ! is-folder "${dir}"; then .log -2 "'${dir}' is NOT a directory!"; fi
-  # if stow -d "${1}" -t "${stowDir}"
+  if stow -d "${dir}" -t "${stowDir}" "${package}"; then
+    .log -l 6 "'${dir}/${package}' has been stowed successfully in '${stowDir}'"
+  else
+    .log -l 2 "'${dir}/${package}' unable to be stowed in '${stowDir}'"
+  fi
 }
 
-# Just to verify the log directory exists, fails if it cannot create
-create_dir "${logDir}"
-# Run some Debug logs on every script that sources
-.log "Successfully sourced ${libName}"
-.log "Running script: ${scriptName}"
+# Runs when file is sourced
+function source_file() {
+  # Just to verify the log directory exists, fails if it cannot create
+  create_dir "${logDir}"
+  # Run some Debug logs on every script that sources
+  .log "Successfully sourced ${libName}"
+  .log "Running script: ${scriptName}"
+}
+
+source_file
