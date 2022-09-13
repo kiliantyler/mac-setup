@@ -29,14 +29,14 @@ repos:
             args:
                 - -x
     - repo: https://github.com/pre-commit/mirrors-eslint
-      rev: v8.23.0
+      rev: v8.23.1
       hooks:
           - id: eslint
             additional_dependencies:
                 - eslint
                 - babel-eslint
     - repo: https://github.com/adrienverge/yamllint.git
-      rev: v1.27.1
+      rev: v1.28.0
       hooks:
           - id: yamllint
             args: [--format, parsable, --strict]
