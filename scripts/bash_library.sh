@@ -271,7 +271,7 @@ function source_file() {
   create_dir "${logDir}"
   # Run some Debug logs on every script that sources
   .log "Successfully sourced ${libName}"
-  .log "Running script: ${scriptName}"
+  .log -l 6 "Running script: ${scriptName}"
 }
 
 source_file

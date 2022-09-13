@@ -5,10 +5,12 @@ source "${SCRIPT_DIR}/../scripts/bash_library.sh"
 
 yamlfile=$1
 
-"${yamlfile}"
+programs=$(yq '.asdf.[]' "${yamlfile}")
+.log "Program list from '${yamlfile}' ${programs}"
 
-yq '.asdf.[]' "${yamlfile}" | while read -r program; do
-  .log "Program input: '${program}'"
+IFS=$'\n'
+for program in ${programs}; do
+  .log "Input: '${program}'"
   if [[ "$program" == *":"* ]]; then
     .log "Program is splitable"
     executable=$(echo "${program}" | cut -f2 -d: | cut -c2-)
@@ -27,7 +29,7 @@ yq '.asdf.[]' "${yamlfile}" | while read -r program; do
     .log -l 6 "asdf global ${program} latest"
     asdf global "${program}" latest
   else
-    .log -l 5 "${executable} does not need to be installed"
+    .log -l 6 "${executable} does not need to be installed"
   fi
 done
 
