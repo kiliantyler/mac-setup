@@ -243,7 +243,7 @@ function find_files() {
   init_func "${1}"
   local dir="${1}"
   .log "Searching '${dir}'"
-  find "${dir}" -type f -print0
+  find "${dir}" -type f -print
 }
 
 # $1 = source directory
@@ -259,7 +259,7 @@ function stow_folder() {
   .log "Stowing files in '${stowDir}'"
   if ! is-folder "${dir}"; then .log -2 "'${dir}' is NOT a directory!"; fi
   if stow -d "${dir}" -t "${stowDir}" "${package}"; then
-    .log -l 6 "'${dir}/${package}' has been stowed successfully in '${stowDir}'"
+    .log -l 5 "'${dir}/${package}' has been stowed successfully in '${stowDir}'"
   else
     .log -l 2 "'${dir}/${package}' unable to be stowed in '${stowDir}'"
   fi

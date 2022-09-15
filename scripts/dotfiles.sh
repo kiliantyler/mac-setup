@@ -42,10 +42,13 @@ for dir in "${dotFolder}"/*; do
     .log -l 6 "Skipping '${dir}' since it's on the noStowList"
     continue
   fi
+
+  files=$(find_files "${dir}")
+  .log "Files: (${files})"
   # Loop through the files that exist in that folder
   # Backup + Delete any files that exist
   # find_files runs in a Subshell -- Cannot exit from main process if anything goes wrong
-  for file in $(find_files "${dir}"); do
+  for file in ${files}; do
     .log "------------------"
     # shellcheck disable=SC2001
     file=$(echo "${file}" | sed "s|${dir}/||")
@@ -61,16 +64,16 @@ for dir in "${dotFolder}"/*; do
     homeFile="${HOME}/${file}"
     .log "Looking for ${homeFile}"
     if [ -f "${homeFile}" ]; then
-      .log -l 5 "File (${homeFile}) exists already"
+      .log -l 6 "File (${homeFile}) exists already"
       expectedPath="${dir}/${file}"
       if [ -L "${homeFile}" ]; then
-        .log -l 5 "File (${homeFile}) is already a symlink"
+        .log -l 6 "File (${homeFile}) is already a symlink"
         .log "Discovering if ${homeFile} links to ${expectedPath}"
         if check_filelink "${homeFile}" "${expectedPath}"; then
           .log -l 6 "${homeFile} points to expected path (${expectedPath}) -- Nothing to do"
           continue
         else
-          .log -l 5 "Link is set incorrectly, backing up and deleting"
+          .log -l 4 "Link is set incorrectly, backing up and deleting"
           backup_file -d "${backupDir}/${internalDir}/${fileDir}" "${homeFile}"
           delete_file "${homeFile}"
         fi
@@ -85,7 +88,7 @@ for dir in "${dotFolder}"/*; do
         delete_file "${homeFile}"
       fi
     else
-      .log -l 6 "File ($homeFile) does not exist yet"
+      .log -l 5 "File ($homeFile) does not exist yet"
     fi
   done
   # Finally run `stow` on that directory once we know all files are removed properly
