@@ -65,6 +65,8 @@
 
 ### Makefile
 
+![Makefile Flow](docs/MakefileFlow.png)
+
 ###### DOTFILES:
 Copies config files from the `dotfiles` directory into their respective locations. This is a separate repo to allow others to use this easily.
 Note: This will skip folders beginning with a `.`
