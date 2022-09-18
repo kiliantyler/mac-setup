@@ -55,10 +55,8 @@ function .log() {
   if [ ${V} -ge "${LEVEL}" ]; then
     # By sending this to /dev/tty we can use .log in functions that return text (like find_files)
     echo -e "${logMessage}" | tee >(decolor >>"${logFile}") >/dev/tty
-  else
-    # ALWAYS log the output (Maybe this should have debug logging disabled by default? only log it if V=7?)
-    echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}](${FUNCNAME[1]}): $1" | decolor >>"${logFile}"
   fi
+  # ALWAYS log the output (Maybe this should have debug logging disabled by default? only log it if V=7?)
   if is-true ${failed}; then exit 1; fi
 }
 
@@ -75,9 +73,17 @@ function log_format() {
   local restore
   restore=$(color "restore")
   local subshellText=""
+  local dateText="[${date}]"
+  local funcText="(${FUNCNAME[2]})"
   if [ "${subshellNum}" -gt 0 ]; then color=$(color red) subshellText="{${color}SUBSHELL: ${subshellNum}${restore}}"; fi
+  echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}](${FUNCNAME[1]}): $1" | decolor >>"${logFile}"
+  # Only log Date & Function if Info or Debug to
+  if [ "${V}" -lt 6 ]; then
+    dateText=""
+    funcText=""
+  fi
   color=$(color "${LOG_COLORS[$LEVEL]}")
-  echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}]${subshellText}(${FUNCNAME[2]}): ${message}"
+  echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}]${dateText}${subshellText}${funcText} ${message}"
 }
 
 # This must be second, the rest of the functions use it
@@ -264,6 +270,29 @@ function stow_folder() {
   else
     .log -l 2 "'${dir}/${package}' unable to be stowed in '${stowDir}'"
   fi
+}
+
+# TODO: use this but don't spawn a subshell
+# $1 = text to split
+# OPTIONAL: $2 = the separator between the splits (default: ': ')
+function split_key_value() {
+  init_func "${1}"
+  input="${1}"
+  separator=": "
+  if [ -n "${2:+x}" ]; then separator=${2}; fi
+  .log "Input: ${input}, Seperator: ${separator}"
+  local split1 split2
+  if [[ "${input}" == *"${separator}"* ]]; then
+    .log "Input (${input}) is splitable"
+    split1=$(echo "${input}" | cut -f2 -d: | cut -c2-)
+    split2=$(echo "${input}" | cut -f1 -d:)
+  else
+    .log "Input (${input}) does not need to be split"
+    split1="${input}"
+    split2="${input}"
+  fi
+  .log -l 1 "Split 1: ${split1} | Split 2: ${split2}"
+  echo "${split1} ${split2}"
 }
 
 # Runs when file is sourced

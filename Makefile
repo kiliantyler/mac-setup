@@ -102,6 +102,17 @@ INSTALL_ASDF_PROGRAMS: INSTALL_YQ
 SETUP_1PASSWORD:
 	macos/1password.sh
 
+INSTALL_MAS:
+	is-executable mas || (echo "Installing mas"; $(BREW_CMD) install mas)
+
+MAS: INSTALL_MAS
+	mas.sh $(INSTALL_PATH) || (echo "Error installing mas programs"; exit 1)
+
+TEST:
+	echo "testies"
+
+INSTALL_ALL: INSTALL_OMZSH_THEMES INSTALL_FORMULAS INSTALL_PIP_PROGRAMS INSTALL_ASDF_PROGRAMS MAS
+
 
 endif
 

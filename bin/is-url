@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+re='^(https?|ftp|file)://[-[:alnum:]\+&@#/%?=~_|!:,.;]*[-[:alnum:]\+&@#/%=~_|]'
+if [[ "${1}" =~ $re ]]; then
+  exit 0
+else
+  exit 1
+fi
