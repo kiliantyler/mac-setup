@@ -5,6 +5,7 @@ DOTFILES_DIR := $(HOME)/dotfiles
 INSTALL_FILE = installs.yaml
 INSTALL_PATH = $(DOTFILES_DIR)/$(INSTALL_FILE)
 export PATH := /usr/local/bin:$(HOME)/.asdf/shims:$(HOMEBREW_PREFIX)/bin:$(SETUP_DIR)/bin:$(SETUP_DIR)/scripts:$(SETUP_DIR)/macos:$(PATH)
+export BASH_LIBRARY := $(SETUP_DIR)/scripts/bash_library.sh
 export ACCEPT_EULA=Y
 USER := $(shell whoami)
 IS_M1 := $(shell bin/is-supported bin/is-arm64 true false)
@@ -16,9 +17,6 @@ BREW=/usr/local/bin/brew
 BREW_CMD=brew
 endif
 TF_VER = latest
-
-# This allows an import of an extending Makefile in your Dotfiles directory
--include $(DOTFILES_DIR)/Makefile
 
 .PHONY: TEST DOTFILES
 
@@ -106,5 +104,9 @@ SETUP_1PASSWORD:
 
 
 endif
+
+# This allows an import of an extending Makefile in your Dotfiles directory
+# At the end to allow overwriting of commands
+-include $(DOTFILES_DIR)/Makefile
 
 $(V).SILENT:
