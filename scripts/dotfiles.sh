@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-mainDir=${SCRIPT_DIR%/*}
 # shellcheck source=/dev/null
-source "${mainDir}/scripts/bash_library.sh"
+if ! source "bash_library.sh" 2>/dev/null; then
+  echo 'Please run via make command'
+  exit 1
+fi
 
 dotFolder="${HOME}/dotfiles"
 backupDir="${HOME}/.dotfiles_backup"

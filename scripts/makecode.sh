@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+# shellcheck source=/dev/null
+if ! source "bash_library.sh" 2>/dev/null; then
+  echo 'Please run via make command'
+  exit 1
+fi
+
 yamlfile=$1
 
 extensions=$(yq '.code.extensions.[]' "$yamlfile")

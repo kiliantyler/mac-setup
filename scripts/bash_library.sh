@@ -258,6 +258,7 @@ function stow_folder() {
   if [ -n "${3:+x}" ]; then stowDir=${3}; fi
   .log "Stowing files in '${stowDir}'"
   if ! is-folder "${dir}"; then .log -2 "'${dir}' is NOT a directory!"; fi
+  if stow -d "${dir}" -D "${package}"; then .log "Unstowed ${package}"; else .log -l 2 "stow -D ${package} FAILED"; fi
   if stow -d "${dir}" -t "${stowDir}" "${package}"; then
     .log -l 5 "'${dir}/${package}' has been stowed successfully in '${stowDir}'"
   else
