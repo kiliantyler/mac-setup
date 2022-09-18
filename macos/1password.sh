@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # shellcheck source=/dev/null
-source "${SCRIPT_DIR}/../scripts/bash_library.sh"
+if ! source "bash_library.sh" 2>/dev/null; then
+  echo 'Please run via make command'
+  exit 1
+fi
 
 agentSock="${HOME}/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 onepassFolder="${HOME}/.1password"

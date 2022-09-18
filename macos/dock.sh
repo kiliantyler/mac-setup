@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
-SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 # shellcheck source=/dev/null
-source "${SCRIPT_DIR}/../scripts/bash_library.sh"
+if ! source "bash_library.sh" 2>/dev/null; then
+  echo 'Please run via make command'
+  exit 1
+fi
 
 # Move dock to left side of screen (Horizonal realestate is larger than vertical)
 .log -l 6 "Setting dock to left side of screen"
