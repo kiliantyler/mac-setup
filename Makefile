@@ -35,19 +35,19 @@ ADD_SUDO:
 INSTALL_HOMEBREW: ADD_SUDO
 	is-executable brew || (echo 'Installing Homebrew'; NONINTERACTIVE=1 /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
 
-POST_INSTALL_HOMEBREW: | INSTALL_HOMEBREW
-	is-grep "/opt/homebrew/bin/brew" $(HOME)/.zprofile || (echo 'eval "$$(/opt/homebrew/bin/brew shellenv)"' | tee -a ~/.zprofile)
+# POST_INSTALL_HOMEBREW: | INSTALL_HOMEBREW
+# 	is-grep "/opt/homebrew/bin/brew" $(HOME)/.zprofile || (echo 'eval "$$($/bin/brew shellenv)"' | tee -a ~/.zprofile)
 
-INSTALL_YQ: | POST_INSTALL_HOMEBREW
+INSTALL_YQ: | INSTALL_HOMEBREW
 	is-executable yq || (echo "Installing yq"; $(BREW_CMD) install yq)
 
-INSTALL_ASDF: | POST_INSTALL_HOMEBREW
+INSTALL_ASDF: | INSTALL_HOMEBREW
 	is-executable asdf || (echo "Installing asdf"; $(BREW_CMD) install asdf)
 
-INSTALL_TFENV: | POST_INSTALL_HOMEBREW
+INSTALL_TFENV: | INSTALL_HOMEBREW
 	is-executable tfenv || (echo "Installing tfenv"; $(BREW_CMD) install tfenv)
 
-INSTALL_STOW: POST_INSTALL_HOMEBREW
+INSTALL_STOW: INSTALL_HOMEBREW
 	is-executable stow || (echo 'Installing stow'; $(BREW_CMD) install stow)
 
 INSTALL_OHMYZSH:
