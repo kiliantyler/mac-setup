@@ -94,8 +94,8 @@ TFENV_SETUP: INSTALL_TFENV
 	tfenv install $(TF_VER); \
 	tfenv use $(TF_VER)
 
-INSTALL_PIPX: POST_INSTALL_HOMEBREW
-	is-executable pipx || (echo "Installing pipx"; pip install pipx)
+INSTALL_PIPX: INSTALL_HOMEBREW
+	is-executable pipx || (echo "Installing pipx"; pip3 install pipx)
 
 INSTALL_PIP_PROGRAMS: INSTALL_PIPX INSTALL_YQ
 	PIPPROGRAMS="$(shell yq '.pip.[]' $(INSTALL_PATH))"; \
@@ -107,7 +107,7 @@ INSTALL_ASDF_PROGRAMS: INSTALL_ASDF INSTALL_YQ
 SETUP_1PASSWORD:
 	macos/1password.sh
 
-INSTALL_MAS: POST_INSTALL_HOMEBREW
+INSTALL_MAS: INSTALL_HOMEBREW
 	is-executable mas || (echo "Installing mas"; $(BREW_CMD) install mas)
 
 MAS: INSTALL_MAS INSTALL_YQ

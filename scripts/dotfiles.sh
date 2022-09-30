@@ -33,7 +33,9 @@ noStowList=("dotfiles_extention" ".ignore")
 
 .log "Looping through folders in ${dotFolder}"
 for dir in "${dotFolder}"/*; do
-  .log "------------------------------------"
+  .log -l 5 "${dir}"
+  stowNeeded=0
+  .log -l 6 "------------------------------------"
   if ! is-folder "${dir}"; then
     .log "Not a directory {$dir}"
     continue
@@ -77,6 +79,7 @@ for dir in "${dotFolder}"/*; do
           .log -l 4 "Link is set incorrectly, backing up and deleting"
           backup_file -d "${backupDir}/${internalDir}/${fileDir}" "${homeFile}"
           delete_file "${homeFile}"
+          stowNeeded=1
         fi
       else
         .log -l 4 "File (${homeFile}) is NOT a symlink"
@@ -87,11 +90,17 @@ for dir in "${dotFolder}"/*; do
           backup_file -d "${backupDir}/${internalDir}/${fileDir}" "${homeFile}"
         fi
         delete_file "${homeFile}"
+        stowNeeded=1
       fi
     else
       .log -l 5 "File ($homeFile) does not exist yet"
+      stowNeeded=1
     fi
   done
   # Finally run `stow` on that directory once we know all files are removed properly
-  stow_folder "${dotFolder}" "${internalDir}"
+  if is-true ${stowNeeded}; then
+    stow_folder "${dotFolder}" "${internalDir}"
+  else
+    .log -l 5 "No stow needed for ${internalDir}"
+  fi
 done
