@@ -33,7 +33,6 @@ noStowList=("dotfiles_extention" ".ignore")
 
 .log "Looping through folders in ${dotFolder}"
 for dir in "${dotFolder}"/*; do
-  .log -l 5 "${dir}"
   stowNeeded=0
   .log -l 6 "------------------------------------"
   if ! is-folder "${dir}"; then
