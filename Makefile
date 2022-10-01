@@ -10,13 +10,15 @@ export ACCEPT_EULA=Y
 USER := $(shell whoami)
 IS_M1 := $(shell bin/is-supported bin/is-arm64 true false)
 ifeq "$(IS_M1)" "true"
-BREW=/opt/homebrew/bin/brew
-BREW_CMD=arch -arm64 brew
+BREW = /opt/homebrew/bin/brew
+BREW_CMD = arch -arm64 brew
 else
-BREW=/usr/local/bin/brew
-BREW_CMD=brew
+BREW = /usr/local/bin/brew
+BREW_CMD = brew
 endif
 TF_VER = latest
+FORMULA=
+
 
 # .PHONY: TEST DOTFILES
 
