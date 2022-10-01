@@ -1,9 +1,16 @@
 OS := $(shell bin/is-supported bin/is-macos macos)
 SETUP_DIR := $(shell dirname $(realpath $(MAKEFILE_LIST)))
-HOMEBREW_PREFIX := $(shell bin/is-supported bin/is-arm64 /opt/homebrew /usr/local)
 DOTFILES_DIR := $(HOME)/dotfiles
 INSTALL_FILE = installs.yaml
 INSTALL_PATH = $(DOTFILES_DIR)/$(INSTALL_FILE)
+ifeq "$(OS)" "macos"
+  HOMEBREW_PREFIX := $(shell bin/is-supported bin/is-arm64 /opt/homebrew /usr/local)
+	SUDOERS_FILE=/private/etc/sudoers.d/$(USER)
+else
+  HOMEBREW_PREFIX := home/linuxbrew/.linuxbrew
+	SUDOERS_FILE=/etc/sudoers.d/$(USER)
+endif
+
 export PATH := /usr/local/bin:$(HOME)/.asdf/shims:$(HOMEBREW_PREFIX)/bin:$(SETUP_DIR)/bin:$(SETUP_DIR)/scripts:$(SETUP_DIR)/macos:$(PATH)
 export BASH_LIBRARY := $(SETUP_DIR)/scripts/bash_library.sh
 export ACCEPT_EULA=Y
@@ -19,18 +26,21 @@ endif
 TF_VER = latest
 FORMULA=
 
+# LINUX CHANGES NEEDED
+#
+# -INSTALL_ALL: INSTALL_FORMULAS INSTALL_ASDF_PROGRAMS INSTALL_OMZSH_THEMES INSTALL_OMZSH_PLUGINS INSTALL_PIP_PROGRAMS MAS
+# +INSTALL_ALL: INSTALL_FORMULAS INSTALL_ASDF_PROGRAMS INSTALL_OMZSH_THEMES INSTALL_OMZSH_PLUGINS INSTALL_PIP_PROGRAMS
 
 # .PHONY: TEST DOTFILES
 
 # We only support macs for now (Linux in the future?)
-ifeq "$(OS)" "macos"
+# ifeq "$(OS)" "macos"
 
 ALL: INSTALL_ALL DOTFILES
 
 DOTFILES: INSTALL_STOW
 	dotfiles.sh || (echo "Error with dotfiles.sh"; exit 1)
 
-ADD_SUDO: SUDOERS_FILE=/private/etc/sudoers.d/$(USER)
 ADD_SUDO:
 	is-grep $(USER) $(SUDOERS_FILE) || (echo "$(USER)		ALL = (ALL) NOPASSWD: ALL" | sudo tee $(SUDOERS_FILE))
 
@@ -115,10 +125,13 @@ INSTALL_MAS: INSTALL_HOMEBREW
 MAS: INSTALL_MAS INSTALL_YQ
 	mas.sh $(INSTALL_PATH) || (echo "Error installing mas programs"; exit 1)
 
-INSTALL_ALL: INSTALL_FORMULAS INSTALL_ASDF_PROGRAMS INSTALL_OMZSH_THEMES INSTALL_OMZSH_PLUGINS INSTALL_PIP_PROGRAMS INSTALL_ASDF_PROGRAMS MAS
-
-
+INSTALL_ALL: INSTALL_FORMULAS INSTALL_ASDF_PROGRAMS INSTALL_OMZSH_THEMES INSTALL_OMZSH_PLUGINS INSTALL_PIP_PROGRAMS
+ifeq "$(OS)" "macos"
+INSTALL_ALL: MAS
 endif
+
+
+# endif
 
 # This allows an import of an extending Makefile in your Dotfiles directory
 # At the end to allow overwriting of commands
