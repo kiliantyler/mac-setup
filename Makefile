@@ -3,6 +3,7 @@ SETUP_DIR := $(shell dirname $(realpath $(MAKEFILE_LIST)))
 DOTFILES_DIR := $(HOME)/dotfiles
 INSTALL_FILE = installs.yaml
 INSTALL_PATH = $(DOTFILES_DIR)/$(INSTALL_FILE)
+ZSH_LOCATION = $(shell which zsh)
 ifeq "$(OS)" "macos"
   HOMEBREW_PREFIX := $(shell bin/is-supported bin/is-arm64 /opt/homebrew /usr/local)
   SUDOERS_FILE=/private/etc/sudoers.d/$(USER)
@@ -31,7 +32,7 @@ FORMULA=
 # We only support macs for now (Linux in the future?)
 # ifeq "$(OS)" "macos"
 
-ALL: INSTALL_ALL DOTFILES
+ALL: INSTALL_ALL DOTFILES ZSH_SHELL EXECUTE_ZSH
 
 DOTFILES: INSTALL_STOW
 	dotfiles.sh || (echo "Error with dotfiles.sh"; exit 1)
@@ -125,8 +126,11 @@ ifeq "$(OS)" "macos"
 INSTALL_ALL: MAS
 endif
 
+ZSH_SHELL:
+	sudo chsh -s $(ZSH_LOCATION) $(USER)
 
-# endif
+EXECUTE_ZSH:
+	exec zsh
 
 # This allows an import of an extending Makefile in your Dotfiles directory
 # At the end to allow overwriting of commands
