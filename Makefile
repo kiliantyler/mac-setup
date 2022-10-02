@@ -47,8 +47,8 @@ ADD_SUDO:
 INSTALL_HOMEBREW: ADD_SUDO
 	is-executable brew || (echo 'Installing Homebrew'; NONINTERACTIVE=1 /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
 
-# POST_INSTALL_HOMEBREW: | INSTALL_HOMEBREW
-# 	is-grep "/opt/homebrew/bin/brew" $(HOME)/.zprofile || (echo 'eval "$$($/bin/brew shellenv)"' | tee -a ~/.zprofile)
+INSTALL_ZSH: INSTALL_HOMEBREW
+	is-executable zsh || (echo "Installing zsh"; $(BREW_CMD) install zsh)
 
 INSTALL_YQ: | INSTALL_HOMEBREW
 	is-executable yq || (echo "Installing yq"; $(BREW_CMD) install yq)
@@ -63,7 +63,7 @@ INSTALL_STOW: INSTALL_HOMEBREW
 	is-executable stow || (echo 'Installing stow'; $(BREW_CMD) install stow)
 
 INSTALL_OHMYZSH:
-	is-folder ~/.oh-my-zsh || (echo 'Installing Oh-my-zsh'; sh -c "$$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)")
+	is-folder ~/.oh-my-zsh || (echo 'Installing Oh-my-zsh'; sh -c "$$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended)
 
 INSTALL_OMZSH_THEMES: INSTALL_OHMYZSH INSTALL_YQ
 	THEMES="$(shell yq '.zsh.oh-my-zsh.themes | to_entries | .[] | (.key + "|" +.value)' $(INSTALL_PATH))"; \
@@ -125,7 +125,7 @@ INSTALL_MAS: INSTALL_HOMEBREW
 MAS: INSTALL_MAS INSTALL_YQ
 	mas.sh $(INSTALL_PATH) || (echo "Error installing mas programs"; exit 1)
 
-INSTALL_ALL: INSTALL_FORMULAS INSTALL_ASDF_PROGRAMS INSTALL_OMZSH_THEMES INSTALL_OMZSH_PLUGINS INSTALL_PIP_PROGRAMS
+INSTALL_ALL: INSTALL_ZSH INSTALL_FORMULAS INSTALL_ASDF_PROGRAMS INSTALL_OMZSH_THEMES INSTALL_OMZSH_PLUGINS INSTALL_PIP_PROGRAMS
 ifeq "$(OS)" "macos"
 INSTALL_ALL: MAS
 endif
