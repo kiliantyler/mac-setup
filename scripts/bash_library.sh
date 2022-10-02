@@ -54,7 +54,7 @@ function .log() {
   logMessage="$(log_format "${LEVEL}" ""${subshellNum} "${message}")"
   if [ ${V} -ge "${LEVEL}" ]; then
     # By sending this to /dev/tty we can use .log in functions that return text (like find_files)
-    echo -e "${logMessage}" | tee >(decolor >>"${logFile}") >/dev/tty
+    echo -e "${logMessage}" >/dev/tty
   fi
   # ALWAYS log the output (Maybe this should have debug logging disabled by default? only log it if V=7?)
   if is-true ${failed}; then exit 1; fi
@@ -75,15 +75,18 @@ function log_format() {
   local subshellText=""
   local dateText="[${date}]"
   local funcText="(${FUNCNAME[2]})"
+  color=$(color "${LOG_COLORS[$LEVEL]}")
+  local logLevelText="[${color}${LOG_LEVELS[$LEVEL]}${restore}]"
   if [ "${subshellNum}" -gt 0 ]; then color=$(color red) subshellText="{${color}SUBSHELL: ${subshellNum}${restore}}"; fi
-  echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}][${date}](${FUNCNAME[1]}): $1" | decolor >>"${logFile}"
-  # Only log Date & Function if Info or Debug to
+  output="${logLevelText}${dateText}${subshellText}${funcText} ${message}"
+  echo -e "${output}" | decolor >>"${logFile}"
+  # Only log Date & Function if Info or Debug to tty
   if [ "${V}" -lt 6 ]; then
     dateText=""
     funcText=""
   fi
-  color=$(color "${LOG_COLORS[$LEVEL]}")
-  echo -e "[${color}${LOG_LEVELS[$LEVEL]}${restore}]${dateText}${subshellText}${funcText} ${message}"
+  output="${logLevelText}${dateText}${subshellText}${funcText} ${message}"
+  echo -e "${output}"
 }
 
 # This must be second, the rest of the functions use it
@@ -264,8 +267,8 @@ function stow_folder() {
   if [ -n "${3:+x}" ]; then stowDir=${3}; fi
   .log "Stowing files in '${stowDir}'"
   if ! is-folder "${dir}"; then .log -2 "'${dir}' is NOT a directory!"; fi
-  if stow -d "${dir}" -D "${package}"; then .log "Unstowed ${package}"; else .log -l 2 "stow -D ${package} FAILED"; fi
-  if stow -d "${dir}" -t "${stowDir}" "${package}"; then
+  if stow --no-folding -d "${dir}" -D "${package}"; then .log "Unstowed ${package}"; else .log -l 2 "stow -D ${package} FAILED"; fi
+  if stow --no-folding -d "${dir}" -t "${stowDir}" "${package}"; then
     .log -l 5 "'${dir}/${package}' has been stowed successfully in '${stowDir}'"
   else
     .log -l 2 "'${dir}/${package}' unable to be stowed in '${stowDir}'"
