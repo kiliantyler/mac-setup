@@ -43,9 +43,6 @@ ADD_SUDO:
 INSTALL_HOMEBREW: ADD_SUDO
 	is-executable brew || (echo 'Installing Homebrew'; NONINTERACTIVE=1 /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
 
-INSTALL_ZSH: INSTALL_HOMEBREW
-	is-executable zsh || (echo "Installing zsh"; $(BREW_CMD) install zsh)
-
 INSTALL_YQ: | INSTALL_HOMEBREW
 	is-executable yq || (echo "Installing yq"; $(BREW_CMD) install yq)
 
