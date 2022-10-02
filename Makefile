@@ -5,10 +5,10 @@ INSTALL_FILE = installs.yaml
 INSTALL_PATH = $(DOTFILES_DIR)/$(INSTALL_FILE)
 ifeq "$(OS)" "macos"
   HOMEBREW_PREFIX := $(shell bin/is-supported bin/is-arm64 /opt/homebrew /usr/local)
-	SUDOERS_FILE=/private/etc/sudoers.d/$(USER)
+  SUDOERS_FILE=/private/etc/sudoers.d/$(USER)
 else
-  HOMEBREW_PREFIX := home/linuxbrew/.linuxbrew
-	SUDOERS_FILE=/etc/sudoers.d/$(USER)
+  HOMEBREW_PREFIX := /home/linuxbrew/.linuxbrew
+  SUDOERS_FILE=/etc/sudoers.d/$(USER)
 endif
 
 export PATH := /usr/local/bin:$(HOME)/.asdf/shims:$(HOMEBREW_PREFIX)/bin:$(SETUP_DIR)/bin:$(SETUP_DIR)/scripts:$(SETUP_DIR)/macos:$(PATH)
@@ -25,11 +25,6 @@ BREW_CMD = brew
 endif
 TF_VER = latest
 FORMULA=
-
-# LINUX CHANGES NEEDED
-#
-# -INSTALL_ALL: INSTALL_FORMULAS INSTALL_ASDF_PROGRAMS INSTALL_OMZSH_THEMES INSTALL_OMZSH_PLUGINS INSTALL_PIP_PROGRAMS MAS
-# +INSTALL_ALL: INSTALL_FORMULAS INSTALL_ASDF_PROGRAMS INSTALL_OMZSH_THEMES INSTALL_OMZSH_PLUGINS INSTALL_PIP_PROGRAMS
 
 # .PHONY: TEST DOTFILES
 
