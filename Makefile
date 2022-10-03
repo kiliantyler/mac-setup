@@ -1,36 +1,7 @@
-OS := $(shell bin/is-supported bin/is-macos macos)
-SETUP_DIR := $(shell dirname $(realpath $(MAKEFILE_LIST)))
-DOTFILES_DIR := $(HOME)/dotfiles
-INSTALL_FILE = installs.yaml
-INSTALL_PATH = $(DOTFILES_DIR)/$(INSTALL_FILE)
-ZSH_LOCATION = $(shell which zsh)
-ifeq "$(OS)" "macos"
-  HOMEBREW_PREFIX := $(shell bin/is-supported bin/is-arm64 /opt/homebrew /usr/local)
-  SUDOERS_FILE=/private/etc/sudoers.d/$(USER)
-else
-  HOMEBREW_PREFIX := /home/linuxbrew/.linuxbrew
-  SUDOERS_FILE=/etc/sudoers.d/$(USER)
-endif
+include ./setup/Makefile
 
-export PATH := /usr/local/bin:$(HOME)/.asdf/shims:$(HOMEBREW_PREFIX)/bin:$(SETUP_DIR)/bin:$(SETUP_DIR)/scripts:$(SETUP_DIR)/macos:$(PATH)
-export BASH_LIBRARY := $(SETUP_DIR)/scripts/bash_library.sh
-export ACCEPT_EULA=Y
-USER := $(shell whoami)
-IS_M1 := $(shell bin/is-supported bin/is-arm64 true false)
-ifeq "$(IS_M1)" "true"
-BREW = /opt/homebrew/bin/brew
-BREW_CMD = arch -arm64 brew
-else
-BREW = /usr/local/bin/brew
-BREW_CMD = brew
-endif
-TF_VER = latest
-FORMULA=
-
-# .PHONY: TEST DOTFILES
-
-# We only support macs for now (Linux in the future?)
-# ifeq "$(OS)" "macos"
+TESTY:
+	echo $(VIRTUAL)
 
 ALL: INSTALL_ALL DOTFILES ZSH_SHELL EXECUTE_ZSH
 
@@ -42,9 +13,6 @@ ADD_SUDO:
 
 INSTALL_HOMEBREW: ADD_SUDO
 	is-executable brew || (echo 'Installing Homebrew'; NONINTERACTIVE=1 /bin/bash -c "$$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)")
-
-INSTALL_ZSH: INSTALL_HOMEBREW
-	is-executable zsh || (echo "Installing zsh"; $(BREW_CMD) install zsh)
 
 INSTALL_YQ: | INSTALL_HOMEBREW
 	is-executable yq || (echo "Installing yq"; $(BREW_CMD) install yq)
@@ -123,7 +91,9 @@ MAS: INSTALL_MAS INSTALL_YQ
 
 INSTALL_ALL: INSTALL_FORMULAS INSTALL_ASDF_PROGRAMS INSTALL_OMZSH_THEMES INSTALL_OMZSH_PLUGINS INSTALL_PIP_PROGRAMS
 ifeq "$(OS)" "macos"
+ifneq "$(VIRTUAL)" "vm"
 INSTALL_ALL: MAS
+endif
 endif
 
 ZSH_SHELL:
