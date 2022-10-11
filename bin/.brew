@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+DOTFILES_DIR=${SCRIPT_DIR%/*}
+# shellcheck disable=SC1091
+source "${DOTFILES_DIR}/scripts/bash_library.sh"
+
+BIN_NAME=$(basename "$0")
+COMMAND_NAME=$1
+SUB_COMMAND=$2
+
+sub_help() {
+  echo "Usage: $BIN_NAME <command>"
+  echo
+  echo "Commands:"
+  echo "   install            Install brew & if it succeeds add to your dotfiles install.yaml"
+}
+
+sub_install() {
+  init_func "${SUB_COMMAND}"
+  (cd "${DOTFILES_DIR}" && make INSTALL_YQ)
+  # brew_install "${SUB_COMMAND}"
+  add_install brew.formulas "${SUB_COMMAND}"
+}
+
+case $COMMAND_NAME in
+"" | "-h" | "--help")
+  sub_help
+  ;;
+*)
+  shift
+  sub_"${COMMAND_NAME}" "$@"
+  if [ $? = 127 ]; then
+    echo "'$COMMAND_NAME' is not a known command or has errors." >&2
+    sub_help
+    exit 1
+  fi
+  ;;
+esac
