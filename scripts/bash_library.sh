@@ -8,6 +8,15 @@ logDir="${mainDir}/logs"
 libraryBackupDir="${mainDir}/backup"
 mkdir -p "${logDir}" >/dev/null 2>&1
 logFile="${logDir}/${scriptName}.log"
+dotFileDir=$(
+  cd "${mainDir}" || exit 1
+  make EXPORT_DOTFILES_DIR V=
+)
+installFile=$(
+  cd "${mainDir}" || exit 1
+  make EXPORT_INSTALLFILE V=
+)
+fullInstallFile="${dotFileDir}/${installFile}"
 NOLOG=0
 
 # https://en.wikipedia.org/wiki/Syslog#Severity_level
@@ -331,6 +340,13 @@ function brew_install() {
 # $2 = install to add
 function add_install() {
   init_func "${2}"
+  local yamlLocation="${1}"
+  local installProgram="${2}"
+  .log "${fullInstallFile}"
+  if ! yq -I4 e "${yamlLocation} |= . + \"${installProgram}\"" "${fullInstallFile}" --inplace; then
+    .log -l 2 "Could not add ${installProgram} to ${yamlLocation} in ${fullInstallFile}"
+  fi
+  yq -I4 e "${yamlLocation} |=  unique" "${fullInstallFile}" --inplace
 }
 
 # Runs when file is sourced
