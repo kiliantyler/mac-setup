@@ -14,6 +14,13 @@ sub_install() {
   brew_install "${SUB_COMMAND}"
 }
 
+sub_uninstall() {
+  init_func "${SUB_COMMAND}"
+  (cd "${DOTFILES_DIR}" && make INSTALL_YQ)
+  remove_install ".brew.formulas" "${SUB_COMMAND}"
+  brew_uninstall "${SUB_COMMAND}"
+}
+
 sub_"${COMMAND_NAME}" "$@" 2>/dev/null
 if [ $? = 127 ]; then
   \brew "$@"

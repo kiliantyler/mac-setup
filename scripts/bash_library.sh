@@ -336,6 +336,16 @@ function brew_install() {
   fi
 }
 
+function brew_uninstall() {
+  init_func "${1}"
+  app="${1}"
+  if brew uninstall "${app}"; then
+    return 0
+  else
+    .log -l 3 "Could not brew uninstall ${app}!"
+  fi
+}
+
 # $1 = location in file to add to
 # $2 = install to add
 function add_install() {
@@ -347,6 +357,18 @@ function add_install() {
     .log -l 2 "Could not add ${installProgram} to ${yamlLocation} in ${fullInstallFile}"
   fi
   yq -I4 e "${yamlLocation} |=  unique" "${fullInstallFile}" --inplace
+}
+
+# $1 = location in file to remove from
+# $2 = install to remove
+function remove_install() {
+  init_func "${2}"
+  local yamlLocation="${1}"
+  local removeProgram="${2}"
+  .log "${fullInstallFile}"
+  if ! yq -I4 "del(${yamlLocation}.[] | select(. == \"${removeProgram}\"))" "${fullInstallFile}" --inplace; then
+    .log -l 2 "Could not add ${removeProgram} to ${yamlLocation} in ${fullInstallFile}"
+  fi
 }
 
 # Runs when file is sourced
