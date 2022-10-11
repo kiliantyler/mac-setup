@@ -8,6 +8,16 @@ logDir="${mainDir}/logs"
 libraryBackupDir="${mainDir}/backup"
 mkdir -p "${logDir}" >/dev/null 2>&1
 logFile="${logDir}/${scriptName}.log"
+dotFileDir=$(
+  cd "${mainDir}" || exit 1
+  make EXPORT_DOTFILES_DIR V=
+)
+installFile=$(
+  cd "${mainDir}" || exit 1
+  make EXPORT_INSTALLFILE V=
+)
+fullInstallFile="${dotFileDir}/${installFile}"
+NOLOG=0
 
 # https://en.wikipedia.org/wiki/Syslog#Severity_level
 LOG_LEVELS=([0]="EMERG " [1]="ALERT " [2]="CRIT  " [3]="ERROR " [4]="WARN  " [5]="NOTICE" [6]="INFO  " [7]="DEBUG ")
@@ -51,13 +61,32 @@ function .log() {
       failed=1
     fi
   fi
-  logMessage="$(log_format "${LEVEL}" ""${subshellNum} "${message}")"
   if [ ${V} -ge "${LEVEL}" ]; then
+    logMessage="$(log_format "${LEVEL}" ""${subshellNum} "${message}")"
     # By sending this to /dev/tty we can use .log in functions that return text (like find_files)
     echo -e "${logMessage}" >/dev/tty
+    if ! is-true ${NOLOG}; then
+      echo -e "${output}" | decolor >>"${logFile}"
+    fi
   fi
-  # ALWAYS log the output (Maybe this should have debug logging disabled by default? only log it if V=7?)
-  if is-true ${failed}; then exit 1; fi
+  if is-true ${failed}; then
+    call_stack 1
+    exit 1
+  fi
+}
+
+call_stack() {
+  local i=0
+  local FRAMES=${#BASH_LINENO[@]}
+  local OFFSET=${1:-0}
+  # FRAMES-2 skips main, the last one in arrays
+  for ((i = FRAMES - 2; i >= OFFSET; i--)); do
+    echo "  File \"${BASH_SOURCE[i + 1]}\", line ${BASH_LINENO[i]}, in ${FUNCNAME[i + 1]}"
+    # Grab the source code of the line
+    sed -n "${BASH_LINENO[i]}{s/^[ \t]*/    /;p}" "${BASH_SOURCE[i + 1]}"
+    # TODO extract arugments from "${BASH_ARGC[@]}" and "${BASH_ARGV[@]}"
+    # It requires `shopt -s extdebug'
+  done
 }
 
 # $1 = Level of log (used to determine color)
@@ -79,7 +108,6 @@ function log_format() {
   local logLevelText="[${color}${LOG_LEVELS[$LEVEL]}${restore}]"
   if [ "${subshellNum}" -gt 0 ]; then color=$(color red) subshellText="{${color}SUBSHELL: ${subshellNum}${restore}}"; fi
   output="${logLevelText}${dateText}${subshellText}${funcText} ${message}"
-  echo -e "${output}" | decolor >>"${logFile}"
   # Only log Date & Function if Info or Debug to tty
   if [ "${V}" -lt 6 ]; then
     dateText=""
@@ -298,13 +326,36 @@ function split_key_value() {
   echo "${split1} ${split2}"
 }
 
+function brew_install() {
+  init_func "${1}"
+  app="${1}"
+  if brew install "${app}"; then
+    return 0
+  else
+    .log -l 3 "Could not brew install ${app}!"
+  fi
+}
+
+# $1 = location in file to add to
+# $2 = install to add
+function add_install() {
+  init_func "${2}"
+  local yamlLocation="${1}"
+  local installProgram="${2}"
+  .log "${fullInstallFile}"
+  if ! yq -I4 e "${yamlLocation} |= . + \"${installProgram}\"" "${fullInstallFile}" --inplace; then
+    .log -l 2 "Could not add ${installProgram} to ${yamlLocation} in ${fullInstallFile}"
+  fi
+  yq -I4 e "${yamlLocation} |=  unique" "${fullInstallFile}" --inplace
+}
+
 # Runs when file is sourced
 function source_file() {
+  NOLOG=1 roll_file "${logFile}" 5 1
   # Just to verify the log directory exists, fails if it cannot create
   create_dir "${logDir}"
   # Run some Debug logs on every script that sources
   .log "Successfully sourced ${libName}"
   .log -l 6 "Running script: ${scriptName}"
 }
-
 source_file
