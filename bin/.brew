@@ -11,15 +11,17 @@ sub_install() {
   init_func "${SUB_COMMAND}"
   (cd "${DOTFILES_DIR}" && make INSTALL_YQ)
   add_install ".brew.formulas" "${SUB_COMMAND}"
-  brew_install "${SUB_COMMAND}"
+  brew_function "install" "${SUB_COMMAND}"
 }
 
 sub_uninstall() {
   init_func "${SUB_COMMAND}"
   (cd "${DOTFILES_DIR}" && make INSTALL_YQ)
   remove_install ".brew.formulas" "${SUB_COMMAND}"
-  brew_uninstall "${SUB_COMMAND}"
+  brew_function "uninstall" "${SUB_COMMAND}"
 }
+
+if [ ${V} -lt 5 ]; then V=5; fi
 
 sub_"${COMMAND_NAME}" "$@" 2>/dev/null
 if [ $? = 127 ]; then

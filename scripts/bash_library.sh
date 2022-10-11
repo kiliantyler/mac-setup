@@ -323,28 +323,35 @@ function split_key_value() {
     split2="${input}"
   fi
   .log -l 1 "Split 1: ${split1} | Split 2: ${split2}"
-  echo "${split1} ${split2}"
+  echo "${split1} ${split2}"dis
 }
 
-function brew_install() {
-  init_func "${1}"
-  app="${1}"
-  if brew install "${app}"; then
+function brew_function() {
+  init_func "${2}"
+  function="${1}"
+  app="${2}"
+  local out
+  stdbuf -oL 
+  if out=$(\brew ${function} "${app}" 2>&1); then
+    .log -l 5 "${out}"
     return 0
   else
-    .log -l 3 "Could not brew install ${app}!"
+    error=$(echo "${out}" | sed "s/Error: //")
+    .log -l 3 "${error}"
   fi
 }
 
-function brew_uninstall() {
-  init_func "${1}"
-  app="${1}"
-  if brew uninstall "${app}"; then
-    return 0
-  else
-    .log -l 3 "Could not brew uninstall ${app}!"
-  fi
-}
+# function brew_uninstall() {
+#   init_func "${1}"
+#   app="${1}"
+#   local out
+#   if out=$(\brew uninstall "${app}" 2>&1); then
+#     return 0
+#   else
+#     error=$(echo "${out}" | sed "s/Error: //")
+#     .log -l 3 "${error}"
+#   fi
+# }
 
 # $1 = location in file to add to
 # $2 = install to add
