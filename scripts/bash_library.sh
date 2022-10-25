@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 mainDir=${SCRIPT_DIR%/*}
-export PATH="${SCRIPT_DIR}/../bin:${PATH}"
+export PATH="${mainDir}/bin:${PATH}"
 libName="bash_library.sh"
 scriptName="$(basename "$(test -L "$0" && readlink "$0" || echo "$0")")"
 logDir="${mainDir}/logs"
@@ -30,6 +30,7 @@ LOG_COLORS=([0]="red" [1]="red" [2]="red" [3]="lred" [4]="yellow" [5]="cyan" [6]
 function .log() {
   # All locals so that variables are always reset
   local NOFAIL=0
+  local NOSTACK=0
   local LEVEL=7
   local subshellNum
   subshellNum="${BASH_SUBSHELL}"
@@ -40,7 +41,12 @@ function .log() {
       LEVEL="$2"
       shift
       ;;
-    -n | --no-exit) NOFAIL=1 ;;
+    -n | --no-exit)
+      NOFAIL=1
+      ;;
+    -s | --no-stack)
+      NOSTACK=1
+      ;;
     *) ;;
     esac
     shift
@@ -66,11 +72,11 @@ function .log() {
     # By sending this to /dev/tty we can use .log in functions that return text (like find_files)
     echo -e "${logMessage}" >/dev/tty
     if ! is-true ${NOLOG}; then
-      echo -e "${output}" | decolor >>"${logFile}"
+      echo -e "${logMessage}" | decolor >>"${logFile}"
     fi
   fi
   if is-true ${failed}; then
-    call_stack 1
+    is-true ${NOSTACK} || call_stack 1
     exit 1
   fi
 }
@@ -331,27 +337,33 @@ function brew_function() {
   function="${1}"
   app="${2}"
   local out
-  stdbuf -oL 
-  if out=$(\brew ${function} "${app}" 2>&1); then
-    .log -l 5 "${out}"
-    return 0
-  else
-    error=$(echo "${out}" | sed "s/Error: //")
-    .log -l 3 "${error}"
-  fi
+  out=$(\brew "${function}" "${app}" 3>&1 2>&3 1>/dev/tty)
+  if [ -n "${out}" ]; then parse_brew "${out}"; fi
+  return $?
 }
 
-# function brew_uninstall() {
-#   init_func "${1}"
-#   app="${1}"
-#   local out
-#   if out=$(\brew uninstall "${app}" 2>&1); then
-#     return 0
-#   else
-#     error=$(echo "${out}" | sed "s/Error: //")
-#     .log -l 3 "${error}"
-#   fi
-# }
+function parse_brew() {
+  init_func "${1}"
+  text="${1}"
+  firstWord=${text%% *}
+  local level=0
+  local levelText
+  local return=0
+  if is-substring "${firstWord}" "Warning"; then
+    level=4
+    levelText="Warning"
+  elif is-substring "${firstWord}" "Error"; then
+    level=3
+    levelText="Error"
+    return=1
+  else
+    echo "${text}"
+  fi
+  if [ ${level} -gt 0 ]; then
+    .log -l ${level} --no-stack "${text//${levelText}: /}"
+  fi
+  return ${return}
+}
 
 # $1 = location in file to add to
 # $2 = install to add

@@ -99,6 +99,12 @@ ZSH_SHELL:
 EXECUTE_ZSH:
 	exec zsh
 
+EXPORT_INSTALLFILE:
+	echo $(INSTALL_FILE)
+
+EXPORT_DOTFILES_DIR:
+	echo $(DOTFILES_DIR)
+
 # This allows an import of an extending Makefile in your Dotfiles directory
 # At the end to allow overwriting of commands
 -include $(DOTFILES_DIR)/Makefile
