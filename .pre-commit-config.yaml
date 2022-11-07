@@ -14,7 +14,7 @@ repos:
           - id: check-case-conflict
           - id: debug-statements
     - repo: https://codeberg.org/frnmst/md-toc
-      rev: 8.1.4
+      rev: 8.1.5
       hooks:
           - id: md-toc
             args: [-s30, -c, -p, github, -l6]
@@ -34,7 +34,7 @@ repos:
             args:
                 - -x
     - repo: https://github.com/pre-commit/mirrors-eslint
-      rev: v8.26.0
+      rev: v8.27.0
       hooks:
           - id: eslint
             additional_dependencies:
