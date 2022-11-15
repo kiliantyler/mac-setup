@@ -22,6 +22,20 @@ sub_uninstall() {
   remove_install ".brew.formulas" "${SUB_COMMAND}" || exit 1
 }
 
+sub_tap() {
+  init_func "${SUB_COMMAND}"
+  (cd "${DOTFILES_DIR}" && make INSTALL_YQ)
+  brew_function "tap" "${SUB_COMMAND}" || exit 1
+  add_install ".brew.taps" "${SUB_COMMAND}"
+}
+
+sub_tap() {
+  init_func "${SUB_COMMAND}"
+  (cd "${DOTFILES_DIR}" && make INSTALL_YQ)
+  brew_function "untap" "${SUB_COMMAND}" || exit 1
+  remove_install ".brew.taps" "${SUB_COMMAND}"
+}
+
 sub_"${COMMAND_NAME}" "$@" 2>/dev/null
 if [ $? = 127 ]; then
   \brew "$@"
