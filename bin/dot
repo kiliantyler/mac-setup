@@ -16,6 +16,7 @@ sub_help() {
   echo "   macos            Apply macOS system defaults"
   echo "   test             Run tests"
   echo "   update           Update packages and pkg managers (OS, brew, npm, gem)"
+  echo "   brew             Run homebrew but it adds/removes to install.yaml (so you have a log of installs)"
 }
 
 sub_make() {
@@ -37,6 +38,10 @@ sub_update() {
 sub_clean() {
   brew cleanup
   gem cleanup
+}
+
+sub_brew() {
+  $SCRIPT_DIR/.brew $@
 }
 
 case $COMMAND_NAME in
