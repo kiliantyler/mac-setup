@@ -371,11 +371,10 @@ function add_install() {
   init_func "${2}"
   local yamlLocation="${1}"
   local installProgram="${2}"
-  .log "${fullInstallFile}"
   if ! yq -I4 e "${yamlLocation} |= . + \"${installProgram}\"" "${fullInstallFile}" --inplace; then
     .log -l 2 "Could not add ${installProgram} to ${yamlLocation} in ${fullInstallFile}"
   fi
-  yq -I4 e "${yamlLocation} |=  unique" "${fullInstallFile}" --inplace
+  yq_finish "${yamlLocation}"
 }
 
 # $1 = location in file to remove from
@@ -384,10 +383,16 @@ function remove_install() {
   init_func "${2}"
   local yamlLocation="${1}"
   local removeProgram="${2}"
-  .log "${fullInstallFile}"
   if ! yq -I4 "del(${yamlLocation}.[] | select(. == \"${removeProgram}\"))" "${fullInstallFile}" --inplace; then
     .log -l 2 "Could not add ${removeProgram} to ${yamlLocation} in ${fullInstallFile}"
   fi
+}
+
+function yq_finish() {
+  init_func "${1}"
+  local yamlLocation="${1}"
+  yq -I4 e "${yamlLocation} |=  unique" "${fullInstallFile}" --inplace
+  yq -I4 e "${yamlLocation} |=  sort" "${fullInstallFile}" --inplace
 }
 
 # Runs when file is sourced
