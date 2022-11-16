@@ -337,7 +337,7 @@ function brew_function() {
   function="${1}"
   app="${2}"
   local out
-  out=$(\brew "${function}" "${app}" 3>&1 2>&3 1>/dev/tty)
+  out=$(\brew ${function} "${app}" 3>&1 2>&3 1>/dev/tty)
   if [ -n "${out}" ]; then parse_brew "${out}"; fi
   return $?
 }

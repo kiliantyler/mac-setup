@@ -11,14 +11,20 @@ SUB_COMMAND=$2
 sub_install() {
   init_func "${SUB_COMMAND}"
   (cd "${DOTFILES_DIR}" && make INSTALL_YQ)
-  brew_function "install" "${SUB_COMMAND}" || exit 1
-  add_install ".brew.formulas" "${SUB_COMMAND}" || exit 1
+  if [[ "${SUB_COMMAND}" == "--cask" ]]; then
+    brew_function "install --cask" "${3}" || exit 1
+    add_install ".brew.casks" "${3}" || exit 1
+  else
+    brew_function "install" "${SUB_COMMAND}" || exit 1
+    add_install ".brew.formulas" "${SUB_COMMAND}" || exit 1
+  fi
 }
 
 sub_uninstall() {
   init_func "${SUB_COMMAND}"
   (cd "${DOTFILES_DIR}" && make INSTALL_YQ)
   brew_function "uninstall" "${SUB_COMMAND}" || exit 1
+  # TODO: search for install first, then remove might be a cask
   remove_install ".brew.formulas" "${SUB_COMMAND}" || exit 1
 }
 
