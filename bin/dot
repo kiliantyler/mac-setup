@@ -44,6 +44,18 @@ sub_brew() {
   $SCRIPT_DIR/.brew $@
 }
 
+source_library() {
+  [[ $(type -t .log) == function ]] || source "${SCRIPT_DIR}/../scripts/bash_library.sh"
+}
+
+sub_alias() {
+  source_library
+  init_func "${2}"
+  local alias="${1}"
+  local command="${2}"
+  add_alias "${alias}" "${command}"
+}
+
 case $COMMAND_NAME in
 "" | "-h" | "--help")
   sub_help

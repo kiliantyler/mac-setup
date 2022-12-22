@@ -332,6 +332,23 @@ function split_key_value() {
   echo "${split1} ${split2}"dis
 }
 
+function check_alias_file() {
+  if [ -z ${DOTALIASFILE+x} ]; then
+    .log -l 2 "No \$DOTALIASFILE set, this is the only supported way currently"
+  fi
+  if [ -f ${DOTALIASFILE} ]; then
+    echo ${DOTALIASFILE}
+    return
+  fi
+  .log -l 2 "Alias file is set, but it is not a file"
+}
+
+function add_alias() {
+  init_func "${2}"
+  file=$(check_alias_file)
+  echo "alias ${1}=\"${2}\"" >> ${file}
+}
+
 function brew_function() {
   init_func "${2}"
   function="${1}"
