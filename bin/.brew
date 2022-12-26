@@ -35,7 +35,7 @@ sub_tap() {
   add_install ".brew.taps" "${SUB_COMMAND}"
 }
 
-sub_tap() {
+sub_untap() {
   init_func "${SUB_COMMAND}"
   (cd "${DOTFILES_DIR}" && make INSTALL_YQ)
   brew_function "untap" "${SUB_COMMAND}" || exit 1
