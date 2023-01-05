@@ -1,72 +1,74 @@
 #!/usr/bin/env bash
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-DOTFILES_DIR=${SCRIPT_DIR%/*}
+# DOTFILES_DIR=${SCRIPT_DIR%/*}
 
-BIN_NAME=$(basename "$0")
-COMMAND_NAME=$1
-# SUB_COMMAND_NAME=$2
+# BIN_NAME=$(basename "$0")
+# COMMAND_NAME=$1
+# # SUB_COMMAND_NAME=$2
 
-sub_help() {
-  echo "Usage: $BIN_NAME <command>"
-  echo
-  echo "Commands:"
-  echo "   clean            Clean up caches (brew, gem)"
-  echo "   edit             Open dotfiles in VSCode ($DOTFILES_IDE)"
-  echo "   help             This help message"
-  echo "   macos            Apply macOS system defaults"
-  echo "   test             Run tests"
-  echo "   update           Update packages and pkg managers (OS, brew, npm, gem)"
-  echo "   brew             Run homebrew but it adds/removes to install.yaml (so you have a log of installs)"
-}
+# sub_help() {
+#   echo "Usage: $BIN_NAME <command>"
+#   echo
+#   echo "Commands:"
+#   echo "   clean            Clean up caches (brew, gem)"
+#   echo "   edit             Open dotfiles in VSCode ($DOTFILES_IDE)"
+#   echo "   help             This help message"
+#   echo "   macos            Apply macOS system defaults"
+#   echo "   test             Run tests"
+#   echo "   update           Update packages and pkg managers (OS, brew, npm, gem)"
+#   echo "   brew             Run homebrew but it adds/removes to install.yaml (so you have a log of installs)"
+# }
 
-sub_make() {
-  (cd "$DOTFILES_DIR" && make "$@")
-}
+# sub_make() {
+#   (cd "$DOTFILES_DIR" && make "$@")
+# }
 
-sub_edit() {
-  code "$DOTFILES_DIR"
-}
+# sub_edit() {
+#   code "$DOTFILES_DIR"
+# }
 
-sub_test() {
-  bats "$DOTFILES_DIR"/test/*.bats
-}
+# sub_test() {
+#   bats "$DOTFILES_DIR"/test/*.bats
+# }
 
-sub_update() {
-  topgrade
-}
+# sub_update() {
+#   topgrade
+# }
 
-sub_clean() {
-  brew cleanup
-  gem cleanup
-}
+# sub_clean() {
+#   brew cleanup
+#   gem cleanup
+# }
 
-sub_brew() {
-  $SCRIPT_DIR/.brew $@
-}
+# sub_brew() {
+#   $SCRIPT_DIR/.brew $@
+# }
 
-source_library() {
-  [[ $(type -t .log) == function ]] || source "${SCRIPT_DIR}/../scripts/bash_library.sh"
-}
+# source_library() {
+#   [[ $(type -t .log) == function ]] || source "${SCRIPT_DIR}/../scripts/bash_library.sh"
+# }
 
-sub_alias() {
-  source_library
-  init_func "${2}"
-  local alias="${1}"
-  local command="${2}"
-  add_alias "${alias}" "${command}"
-}
+# sub_alias() {
+#   source_library
+#   init_func "${2}"
+#   local alias="${1}"
+#   local command="${2}"
+#   add_alias "${alias}" "${command}"
+# }
 
-case $COMMAND_NAME in
-"" | "-h" | "--help")
-  sub_help
-  ;;
-*)
-  shift
-  sub_"${COMMAND_NAME}" "$@"
-  if [ $? = 127 ]; then
-    echo "'$COMMAND_NAME' is not a known command or has errors." >&2
-    sub_help
-    exit 1
-  fi
-  ;;
-esac
+# case $COMMAND_NAME in
+# "" | "-h" | "--help")
+#   sub_help
+#   ;;
+# *)
+#   shift
+#   sub_"${COMMAND_NAME}" "$@"
+#   if [ $? = 127 ]; then
+#     echo "'$COMMAND_NAME' is not a known command or has errors." >&2
+#     sub_help
+#     exit 1
+#   fi
+#   ;;
+# esac
+
+task --taskfile "${SCRIPT_DIR}"/../Taskfile.yml "$@"

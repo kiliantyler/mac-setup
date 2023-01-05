@@ -1,0 +1,20 @@
+---
+version: '3'
+
+env:
+    YAMLFILE: ${HOME}/dotfiles/installs.yaml
+
+includes:
+    os: ./.taskfiles/Taskfile_{{OS}}.yml
+    brew: ./.taskfiles/Brew
+    dot:
+        taskfile: ${HOME}/dotfiles/Taskfile.yml
+        optional: true
+
+tasks:
+    update:
+        cmds:
+            - topgrade
+    hello:
+        cmds:
+            - echo "Hello task!"
