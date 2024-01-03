@@ -27,32 +27,10 @@ INSTALL_OHMYZSH:
 	is-folder ~/.oh-my-zsh || (echo 'Installing Oh-my-zsh'; sh -c "$$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended)
 
 INSTALL_OMZSH_THEMES: INSTALL_OHMYZSH INSTALL_YQ
-	THEMES="$(shell PATH=$(PATH) yq '.zsh.oh-my-zsh.themes | to_entries | .[] | (.key + "|" +.value)' $(INSTALL_PATH))"; \
-	for theme in $${THEMES}; do \
-	folder="$$(echo $$theme | cut -f1 -d'|')"; \
-	gitrepo="$$(echo $$theme | cut -f2 -d'|')"; \
-	if [ ! -d "$${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/themes/$${folder}" ]; then \
-	echo "Cloning $${folder}"; \
-	git clone --depth=1 $${gitrepo} $${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/themes/$${folder}; \
-	else \
-	echo "Updating $${folder}: "; \
-	git -C "$${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/themes/$${folder}" pull; \
-	fi \
-	done # TODO: move this to a script
+	ohmyzshthemes.sh $(INSTALL_PATH) || (echo "Error installing ZSH Theme"; exit 1)
 
 INSTALL_OMZSH_PLUGINS: INSTALL_OHMYZSH INSTALL_YQ
-	PLUGINS="$(shell PATH=$(PATH) yq '.zsh.oh-my-zsh.plugins | to_entries | .[] | (.key + "|" +.value)' $(INSTALL_PATH))"; \
-	for plugin in $${PLUGINS}; do \
-	folder="$$(echo $$plugin | cut -f1 -d'|')"; \
-	gitrepo="$$(echo $$plugin | cut -f2 -d'|')"; \
-	if [ ! -d "$${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/plugins/$${folder}" ]; then \
-	echo "Cloning $${folder}"; \
-	git clone --depth=1 $${gitrepo} $${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/plugins/$${folder}; \
-	else \
-	echo "Updating $${folder}: "; \
-	git -C "$${ZSH_CUSTOM:-$$HOME/.oh-my-zsh/custom}/plugins/$${folder}" pull; \
-	fi \
-	done # TODO: move this to a script
+	ohmyzshplugins.sh $(INSTALL_PATH) || (echo "Error installing ZSH Plugins"; exit 1)
 
 INSTALL_FORMULAS: CREATE_BREWFILE
 	brew bundle --file=$(SETUP_DIR)/install/Brewfile || true
