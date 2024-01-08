@@ -19,7 +19,7 @@ repos:
   - id: mixed-line-ending
     args: [--fix=lf]
 - repo: https://codeberg.org/frnmst/md-toc
-  rev: 8.1.5
+  rev: 8.2.2
   hooks:
   - id: md-toc
     args: [-s30, -c, -p, github, -l6]
@@ -39,19 +39,19 @@ repos:
     args:
     - -x
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v8.28.0
+  rev: v9.0.0-alpha.0
   hooks:
   - id: eslint
     additional_dependencies:
     - eslint
     - babel-eslint
 - repo: https://github.com/adrienverge/yamllint.git
-  rev: v1.28.0
+  rev: v1.33.0
   hooks:
   - id: yamllint
     args: [--format, parsable, --strict]
 - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
-  rev: 0.2.2
+  rev: 0.2.3
   hooks:
       - id: yamlfmt
 - repo: https://github.com/erikogan/prevent-submodule-regression
