@@ -1,68 +1,69 @@
+---
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.5.0
-  hooks:
-  - id: trailing-whitespace
-  - id: check-yaml
-  - id: check-added-large-files
-    args: [--maxkb=1000]
-  - id: destroyed-symlinks
-  - id: detect-private-key
-  - id: check-ast
-  - id: check-case-conflict
-  - id: debug-statements
-  - id: check-json
-  - id: check-merge-conflict
-  - id: check-symlinks
-  - id: check-vcs-permalinks
-  - id: end-of-file-fixer
-  - id: mixed-line-ending
-    args: [--fix=lf]
-- repo: https://codeberg.org/frnmst/md-toc
-  rev: 8.1.5
-  hooks:
-  - id: md-toc
-    args: [-s30, -c, -p, github, -l6]
-- repo: https://github.com/jumanjihouse/pre-commit-hooks
-  rev: 3.0.0
-  hooks:
-  - id: forbid-binary
-    exclude: >
-        (?x)^(
-          docs/MakefileFlow.png
-        )$
-  - id: shfmt
-    args:
-    - -i
-    - '2'
-  - id: shellcheck
-    args:
-    - -x
-- repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v8.28.0
-  hooks:
-  - id: eslint
-    additional_dependencies:
-    - eslint
-    - babel-eslint
-- repo: https://github.com/adrienverge/yamllint.git
-  rev: v1.28.0
-  hooks:
-  - id: yamllint
-    args: [--format, parsable, --strict]
-- repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
-  rev: 0.2.2
-  hooks:
-      - id: yamlfmt
-- repo: https://github.com/erikogan/prevent-submodule-regression
-  rev: v0.1.2
-  hooks:
-  - id: prevent-submodule-regression
-- repo: https://github.com/compilerla/conventional-pre-commit
-  rev: v3.0.0
-  hooks:
-  - id: conventional-pre-commit
-    stages: [commit-msg]
-    args: []
+    - repo: https://github.com/pre-commit/pre-commit-hooks
+      rev: v4.5.0
+      hooks:
+          - id: trailing-whitespace
+          - id: check-yaml
+          - id: check-added-large-files
+            args: [--maxkb=1000]
+          - id: destroyed-symlinks
+          - id: detect-private-key
+          - id: check-ast
+          - id: check-case-conflict
+          - id: debug-statements
+          - id: check-json
+          - id: check-merge-conflict
+          - id: check-symlinks
+          - id: check-vcs-permalinks
+          - id: end-of-file-fixer
+          - id: mixed-line-ending
+            args: [--fix=lf]
+    - repo: https://codeberg.org/frnmst/md-toc
+      rev: 8.2.2
+      hooks:
+          - id: md-toc
+            args: [-s30, -c, -p, github, -l6]
+    - repo: https://github.com/jumanjihouse/pre-commit-hooks
+      rev: 3.0.0
+      hooks:
+          - id: forbid-binary
+            exclude: >
+                (?x)^(
+                  docs/MakefileFlow.png
+                )$
+          - id: shfmt
+            args:
+                - -i
+                - '2'
+          - id: shellcheck
+            args:
+                - -x
+    - repo: https://github.com/pre-commit/mirrors-eslint
+      rev: v9.0.0-alpha.0
+      hooks:
+          - id: eslint
+            additional_dependencies:
+                - eslint
+                - babel-eslint
+    - repo: https://github.com/adrienverge/yamllint.git
+      rev: v1.33.0
+      hooks:
+          - id: yamllint
+            args: [--format, parsable, --strict]
+    - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+      rev: 0.2.3
+      hooks:
+          - id: yamlfmt
+    - repo: https://github.com/erikogan/prevent-submodule-regression
+      rev: v0.1.2
+      hooks:
+          - id: prevent-submodule-regression
+    - repo: https://github.com/compilerla/conventional-pre-commit
+      rev: v3.0.0
+      hooks:
+          - id: conventional-pre-commit
+            stages: [commit-msg]
+            args: []
 ci:
-  skip: [shfmt, shellcheck]
+    skip: [shfmt, shellcheck]
