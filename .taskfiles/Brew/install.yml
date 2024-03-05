@@ -1,92 +1,86 @@
----
 version: 3
 
 tasks:
 
-    default:
-        desc: Install Homebrew from latest install script
-        cmds:
-            - NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        status:
-            - type brew
-        internal: true
+  default:
+    desc: Install Homebrew from latest install script
+    cmds:
+    - NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    status:
+    - type brew
+    internal: true
 
-    yq:
-        cmds:
-            - brew install yq
-        status:
-            - type yq
+  yq:
+    cmds:
+    - brew install yq
+    status:
+    - type yq
 
-    go-task:
-        deps: [default]
-        cmds:
-            - brew install go-task
+  formulas:
+    desc: Installs all brew formulas
+    deps: [taps]
+    cmds:
+    - |
+      set -e
+      {{ range $i, $app := .APPS | splitLines -}}
+        {{$continue := false}}
+        {{ range $ii, $inst := $.INSTALLED | splitLines -}}
+          {{ if eq $app $inst }} {{$continue = true}} {{break}} {{ end -}}
+        {{ end -}}
+        {{ if eq $continue true }}{{continue}}{{end}}
+        {{ if $app }}brew install {{$app}}{{ end }}
+      {{ end -}}
+    silent: true
+    vars:
+      APPS:
+        sh: yq '.brew.formulas.[]' "{{.YAMLFILE}}"
+      INSTALLED:
+        sh: brew list --formula -1
 
-    formulas:
-        desc: Installs all brew formulas
-        deps: [taps]
-        cmds:
-            - |
-              set -e
-              {{ range $i, $app := .APPS | splitLines -}}
-                {{$continue := false}}
-                {{ range $ii, $inst := $.INSTALLED | splitLines -}}
-                  {{ if eq $app $inst }} {{$continue = true}} {{break}} {{ end -}}
-                {{ end -}}
-                {{ if eq $continue true }}{{continue}}{{end}}
-                {{ if $app }}brew install {{$app}}{{ end }}
-              {{ end -}}
-        silent: true
-        vars:
-            APPS:
-                sh: yq '.brew.formulas.[]' "{{.YAMLFILE}}"
-            INSTALLED:
-                sh: brew list --formula -1
+  casks:
+    desc: Installs all brew casks
+    deps: [taps]
+    cmds:
+    - |
+      set -e
+      {{ range $i, $app := .APPS | splitLines -}}
+        {{$continue := false}}
+        {{ range $ii, $inst := $.INSTALLED | splitLines -}}
+          {{ if eq $app $inst }} {{$continue = true}} {{break}} {{ end -}}
+        {{ end -}}
+        {{ if eq $continue true }}{{continue}}{{end}}
+        {{ if $app }}brew install --cask {{$app}}{{ end }}
+      {{ end -}}
+    silent: true
+    vars:
+      APPS:
+        sh: yq '.brew.casks.[]' "{{.YAMLFILE}}"
+      INSTALLED:
+        sh: brew list --casks -1
 
-    casks:
-        desc: Installs all brew casks
-        deps: [taps]
-        cmds:
-            - |
-              set -e
-              {{ range $i, $app := .APPS | splitLines -}}
-                {{$continue := false}}
-                {{ range $ii, $inst := $.INSTALLED | splitLines -}}
-                  {{ if eq $app $inst }} {{$continue = true}} {{break}} {{ end -}}
-                {{ end -}}
-                {{ if eq $continue true }}{{continue}}{{end}}
-                {{ if $app }}brew install --cask {{$app}}{{ end }}
-              {{ end -}}
-        silent: true
-        vars:
-            APPS:
-                sh: yq '.brew.casks.[]' "{{.YAMLFILE}}"
-            INSTALLED:
-                sh: brew list --casks -1
+  taps:
+    desc: Taps all taps
+    run: when_changed
+    cmds:
+    - |
+      set -e
+      {{ range $i, $tap := .TAPS | splitLines -}}
+        {{$continue := false}}
+        {{ range $ii, $inst := $.INSTALLED | splitLines -}}
+          {{ if eq $tap $inst }}{{$continue = true}}{{break}} {{ end -}}
+        {{ end -}}
+        {{ if eq $continue true }}{{continue}}{{end}}
+        {{ if $tap }}brew tap {{$tap}}{{ end }}
+      {{end}}
+    silent: true
+    vars:
+      TAPS:
+        sh: yq '.brew.taps.[]' "{{.YAMLFILE}}"
+      INSTALLED:
+        sh: brew tap
 
-    taps:
-        desc: Taps all taps
-        run: when_changed
-        cmds:
-            - |
-              set -e
-              {{ range $i, $tap := .TAPS | splitLines -}}
-                {{$continue := false}}
-                {{ range $ii, $inst := $.INSTALLED | splitLines -}}
-                  {{ if eq $tap $inst }}{{$continue = true}}{{break}} {{ end -}}
-                {{ end -}}
-                {{ if eq $continue true }}{{continue}}{{end}}
-                {{ if $tap }}brew tap {{$tap}}{{ end }}
-              {{end}}
-        silent: true
-        vars:
-            TAPS:
-                sh: yq '.brew.taps.[]' "{{.YAMLFILE}}"
-            INSTALLED:
-                sh: brew tap
-
-    all:
-        desc: Install Taps/Casks/Formulas
-        cmds:
-            - task: formulas
-            - task: casks
+  all:
+    desc: Install Taps/Casks/Formulas
+    cmds:
+    - task: formulas
+    - task: casks

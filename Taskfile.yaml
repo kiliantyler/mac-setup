@@ -1,0 +1,31 @@
+version: '3'
+
+env:
+  YAMLFILE: ${HOME}/dotfiles/installs.yaml
+  BASH_LIBRARY: ./scripts/bash_library.sh
+  ACCEPT_EULA: Y
+  PATH: ./bin:./scripts:./macos:$(PATH)
+
+includes:
+  precommit: ./.taskfiles/PrecommitTasks.yaml
+  os: ./.taskfiles/Taskfile_{{OS}}.yml
+  brew: ./.taskfiles/Brew
+  dotfiles: ./.taskfiles/dotfiles
+  dot:
+    taskfile: ${HOME}/dotfiles/Taskfile.yml
+    optional: true
+
+tasks:
+  default:
+    silent: true
+    cmds:
+    - task -l
+
+  update:
+    cmds:
+    - topgrade
+    desc: Update all installed packages (topgrade)
+
+  upgrade:
+    cmd: echo "TODO"
+    desc: Upgrade this installer

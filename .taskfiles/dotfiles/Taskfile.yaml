@@ -1,0 +1,7 @@
+version: "3"
+
+tasks:
+  install:
+    desc: Install dotfiles using dotfiles.sh
+    cmds:
+    - ./scripts/dotfiles.sh
