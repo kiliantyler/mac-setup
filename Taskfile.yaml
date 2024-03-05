@@ -14,6 +14,7 @@ includes:
   dot:
     taskfile: ${HOME}/dotfiles/Taskfile.yml
     optional: true
+  npm: ./.taskfiles/NodeTasks.yaml
 
 tasks:
   default:
