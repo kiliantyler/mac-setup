@@ -5,7 +5,7 @@ tasks:
     desc: Install dotfiles using dotfiles.sh
     dir: ./scripts
     env:
-      DOTFILES_DIR: {? {.TaskDir: ''} : ''}
+      DOTFILES_DIR: ${HOME}/dotfiles # change this
     cmds:
     - V={{.V}} dotfiles.sh
     vars:

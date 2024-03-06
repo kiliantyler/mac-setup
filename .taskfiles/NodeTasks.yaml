@@ -1,7 +1,21 @@
 version: 3
 
+# NVM isn't accessible since it's a script not a binary :(
+
 tasks:
   latest:
     desc: Install latest Node.js
     cmds:
-    - nvm install --lts --latest-npm --default
+    - source $NVM_DIR/nvm.sh && nvm install --lts --latest-npm --default
+
+  echo-path:
+    desc: Echo the PATH
+    cmds:
+    - echo -e ${PATH//:/\\n}
+
+  install-yo:
+    desc: Install Yeoman
+    cmds:
+    - source $NVM_DIR/nvm.sh && nvm use default
+    - npm install -g yo
+    # update Alias to use nvm use default

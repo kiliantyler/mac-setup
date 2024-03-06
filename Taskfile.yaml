@@ -11,10 +11,10 @@ includes:
   os: ./.taskfiles/Taskfile_{{OS}}.yml
   brew: ./.taskfiles/Brew
   dotfiles: ./.taskfiles/dotfiles
+  node: ./.taskfiles/NodeTasks.yaml
   dot:
     taskfile: ${HOME}/dotfiles/Taskfile.yml
     optional: true
-  npm: ./.taskfiles/NodeTasks.yaml
 
 tasks:
   default:
